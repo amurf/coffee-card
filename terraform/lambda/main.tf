@@ -2,7 +2,7 @@ resource "aws_s3_bucket" "lambda_deploy_bucket" {
   bucket = var.lambda_deploy_bucket
 }
 
-resource "aws_s3_object" "default_lambda_code" {
+resource "aws_s3_object" "lambda_default_code" {
   bucket = aws_s3_bucket.lambda_deploy_bucket.bucket
   key    = var.lambda_key
   source = var.lambda_file_default
