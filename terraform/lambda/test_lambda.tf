@@ -10,3 +10,7 @@ resource "aws_lambda_function" "test" {
 output "lambda_test_arn" {
   value = aws_lambda_function.test.arn
 }
+
+output "lambda_test_invoke_arn" {
+  value = aws_lambda_function.test.invoke_arn
+}

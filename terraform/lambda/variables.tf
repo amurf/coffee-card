@@ -9,5 +9,5 @@ variable "lambda_key" {
 variable "lambda_file_default" {
   description = "The hello-world lambda, we upload this as a placeholder for initial infrastructure deployment"
   type = string
-  default = "./lambdas/hello-world.zip"
+  default = "./lambda/hello-world.zip"
 }
