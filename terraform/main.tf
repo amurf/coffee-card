@@ -16,6 +16,11 @@ provider "aws" {
 module "iam" {
   source = "./iam"
 }
+
+module "dynamodb" {
+  source = "./dynamodb"
+}
+
 module "lambda" {
   source = "./lambda"
   lambda_deploy_bucket = var.lambda_deploy_bucket
