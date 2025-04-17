@@ -1,6 +1,6 @@
-resource "aws_dynamodb_table" "store_profile_with_loyalty_cards" {
-  name           = "StoreProfileWithLoyaltyCards"
-  billing_mode   = "PAY_PER_REQUEST"  # Change to "PROVISIONED" if preferred
+resource "aws_dynamodb_table" "coffee_card_data" {
+  name           = "CoffeeCardData"
+  billing_mode   = "PAY_PER_REQUEST"
   hash_key       = "PK"
   range_key      = "SK"
 
