@@ -16,6 +16,7 @@
     "@coffee-card/shared": "file:../shared"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.149",
     "tsx": "^4.19.3"
   }
 }
