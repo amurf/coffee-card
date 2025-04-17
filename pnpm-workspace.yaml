@@ -1,3 +1,6 @@
 packages:
   - backend
   - shared
+
+onlyBuiltDependencies:
+  - esbuild
