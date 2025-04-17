@@ -15,6 +15,7 @@ const TABLE_INDEXES = {
   GET_BY_CARD_ID: "getByCardId",
 } as const
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const insertData = async <T extends Record<string, any>>(
   data: T,
 ): Promise<PutCommandOutput> => {
