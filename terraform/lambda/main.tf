@@ -25,9 +25,8 @@ resource "aws_iam_role" "lambda_execution_role" {
     ]
   })
 }
-resource "aws_iam_policy" "dynamodb_query_policy" {
-  name        = "dynamodb_query_policy"
-  description = "Policy to allow DynamoDB Query action on all tables"
+resource "aws_iam_policy" "lambda_policy" {
+  name        = "lambda_policy"
   policy      = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -35,6 +34,15 @@ resource "aws_iam_policy" "dynamodb_query_policy" {
         Action = "dynamodb:Query",
         Effect = "Allow",
         Resource = "arn:aws:dynamodb:*:*:table/*"
+      },
+      {
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+        ],
+        Effect = "Allow",
+        Resource = "arn:aws:logs:*:*:*"
       }
     ]
   })
@@ -43,5 +51,5 @@ resource "aws_iam_policy" "dynamodb_query_policy" {
 # Attach the policy to the Lambda execution role
 resource "aws_iam_role_policy_attachment" "lambda_dynamodb_query_attachment" {
   role       = aws_iam_role.lambda_execution_role.name
-  policy_arn = aws_iam_policy.dynamodb_query_policy.arn
+  policy_arn = aws_iam_policy.lambda_policy.arn
 }

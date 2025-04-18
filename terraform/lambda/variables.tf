@@ -1,4 +1,5 @@
 variable "lambda_deploy_bucket" {}
+variable "iam" {}
 
 variable "lambda_key" {
   description = "S3 key for initial lambda code"
