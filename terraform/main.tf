@@ -30,3 +30,8 @@ module "api-gateway" {
   source = "./api-gateway"
   lambda = module.lambda
 }
+
+# Uncomment this block to deploy CloudFront + S3 in prod
+# module "web_frontend_prod" {
+#   source = "./web_frontend"
+# }
