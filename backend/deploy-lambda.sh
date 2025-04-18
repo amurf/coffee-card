@@ -10,21 +10,21 @@ if [ -z "$1" ]; then
 fi
 
 LAMBDA_NAME="$1"
-SOURCE_DIR="./dist/backend/src/api"
-SOURCE_FILE="$1.js"
+DIST_DIR="./dist/backend/src/api"
+LAMBDA_FILE="$1.js"
 ZIP_FILE="$1.zip"
-TMP_DIR="$SOURCE_DIR/.$1-tmp"
+TMP_DIR="$DIST_DIR/.$1-tmp"
 
-if [ ! -f "$SOURCE_DIR/$SOURCE_FILE" ]; then
-  echo "❌ Error: Source file '$SOURCE_FILE' not found."
+if [ ! -f "$DIST_DIR/$LAMBDA_FILE" ]; then
+  echo "❌ Error: Source file '$LAMBDA_FILE' not found."
   exit 1
 fi
 
 echo "📦 Creating zip file for $LAMBDA_NAME..."
 mkdir -p "$TMP_DIR"
 
-cp -r package.json node_modules "$SOURCE_DIR/$SOURCE_FILE" "$TMP_DIR/"
-mv "$TMP_DIR/$SOURCE_FILE" "$TMP_DIR/index.js"
+cp -r package.json node_modules "$DIST_DIR/$LAMBDA_FILE" "$TMP_DIR/"
+mv "$TMP_DIR/$LAMBDA_FILE" "$TMP_DIR/index.js"
 
 pushd "$TMP_DIR" > /dev/null
 zip -r "$ZIP_FILE" . > /dev/null
