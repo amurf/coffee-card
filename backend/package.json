@@ -5,6 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tsc --outDir dist",
     "seed:db": "tsx ./src/scripts/dynamo-seed-dev.ts"
   },
   "keywords": [],
