@@ -2,7 +2,7 @@
 set -e
 
 # For all files in the src/api directory, call ./deploy-lambda.sh $fileNameWithoutExtension
-SOURCE_DIR="./dist/backend/src/api"
+SOURCE_DIR="./dist/api"
 FILES=$(find "$SOURCE_DIR" -type f -name "*.js")
 for FILE in $FILES; do
   # Get the file name without the extension

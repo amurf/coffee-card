@@ -34,6 +34,9 @@ importers:
       '@types/aws-lambda':
         specifier: ^8.10.149
         version: 8.10.149
+      esbuild:
+        specifier: ^0.25.2
+        version: 0.25.2
       eslint:
         specifier: ^9.24.0
         version: 9.24.0(jiti@2.4.2)
