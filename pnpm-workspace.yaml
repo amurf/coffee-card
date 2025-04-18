@@ -1,6 +1,7 @@
 packages:
   - backend
   - shared
+  - web-frontend
 
 onlyBuiltDependencies:
   - esbuild
