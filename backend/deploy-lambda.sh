@@ -23,7 +23,7 @@ fi
 echo "📦 Creating zip file for $LAMBDA_NAME..."
 mkdir -p "$TMP_DIR"
 
-cp -r package.json node_modules "$DIST_DIR/$LAMBDA_FILE" "$DIST_DIR/$LAMBDA_FILE.map" "$TMP_DIR/"
+cp -r package.json node_modules "$DIST_DIR/$LAMBDA_FILE" "$TMP_DIR/"
 
 pushd "$TMP_DIR" > /dev/null
 zip -r "$ZIP_FILE" . > /dev/null

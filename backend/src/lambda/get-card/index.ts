@@ -1,7 +1,6 @@
 // Lambda for handling card related operations
 "use strict"
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
-
 import { getCard } from "src/dynamo"
 
 export async function handler(

@@ -2,10 +2,9 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "prebuild": "rm -rf dist && tsc --noEmit",
-    "build": "esbuild src/lambda/**/index.ts --bundle --minify --sourcemap --platform=node --target=es2020  --outdir=dist/lambda",
+    "build": "esbuild src/lambda/**/index.ts --bundle --platform=node --outdir=dist/lambda",
     "seed:db": "tsx ./src/scripts/dynamo-seed-dev.ts",
     "run-lambda": "tsx ./src/scripts/run-lambda.ts"
   },
