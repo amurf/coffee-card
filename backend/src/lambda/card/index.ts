@@ -1,7 +1,7 @@
 // Lambda for handling card related operations
 "use strict"
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
-import { getCard } from "src/dynamo"
+import { getCardById } from "src/dynamo"
 
 export async function handler(
   event: APIGatewayProxyEvent,
@@ -18,7 +18,7 @@ export async function handler(
     }
   }
 
-  const card = await getCard(cardId)
+  const card = await getCardById(cardId)
   if (!card) {
     return {
       statusCode: 404,

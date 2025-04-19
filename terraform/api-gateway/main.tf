@@ -19,7 +19,7 @@ resource "aws_apigatewayv2_integration" "store_lambda" {
 
 resource "aws_apigatewayv2_route" "coffee_card_api_store" {
   api_id    = aws_apigatewayv2_api.coffee_card_api.id
-  route_key = "GET /store"
+  route_key = "GET /store/{storeName}"
   target    = "integrations/${aws_apigatewayv2_integration.store_lambda.id}"
 }
 

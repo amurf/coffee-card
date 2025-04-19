@@ -5,7 +5,7 @@ import {
   PutCommand,
   PutCommandOutput,
 } from "@aws-sdk/lib-dynamodb"
-import { LoyaltyCard } from "@coffee-card/shared"
+import { LoyaltyCard, StoreProfile } from "@coffee-card/shared"
 
 const client = new DynamoDBClient({})
 const docClient = DynamoDBDocumentClient.from(client)
@@ -28,7 +28,7 @@ export const insertData = async <T extends Record<string, any>>(
   return response
 }
 
-export const getCard = async (
+export const getCardById = async (
   cardId: LoyaltyCard["cardId"],
 ): Promise<LoyaltyCard | null> => {
   const command = new QueryCommand({
@@ -47,4 +47,44 @@ export const getCard = async (
   }
 
   return null
+}
+
+export const getStoreByName = async (
+  storeName: string,
+): Promise<StoreProfile | null> => {
+  const command = new QueryCommand({
+    TableName: TABLE_NAME,
+    KeyConditionExpression: "PK = :pk AND SK = :sk",
+    ExpressionAttributeValues: {
+      ":pk": `STORE#${storeName}`,
+      ":sk": "PROFILE",
+    },
+  })
+
+  const response = await docClient.send(command)
+
+  if (response.Items?.length) {
+    return response.Items[0] as StoreProfile
+  }
+
+  return null
+}
+
+export const getStoreCards = async (
+  storeName: string,
+): Promise<LoyaltyCard[]> => {
+  const command = new QueryCommand({
+    TableName: TABLE_NAME,
+    KeyConditionExpression: "PK = :pk AND SK = :sk",
+    ExpressionAttributeValues: {
+      ":pk": `STORE#${storeName}`,
+      ":sk": "CARD",
+    },
+  })
+
+  const response = await docClient.send(command)
+  if (response.Items?.length) {
+    return response.Items as LoyaltyCard[]
+  }
+  return []
 }

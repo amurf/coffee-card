@@ -1,6 +1,7 @@
 export interface LoyaltyCard {
-  PK: string
+  PK: string // STORE#<storeName> - storeName is all lowercase
   SK: "CARD"
+  EntityType: "Card"
   cardId: string
   storeName: string
   issueDate: string

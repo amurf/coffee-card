@@ -3,7 +3,7 @@
 // This is useful for testing the lambda code locally without deploying it to AWS
 
 import { APIGatewayProxyEvent } from "aws-lambda"
-import { handler } from "../lambda/card"
+import { handler } from "../lambda/store"
 
 async function main() {
   const event: APIGatewayProxyEvent = {
@@ -58,7 +58,7 @@ async function main() {
     },
     body: "eyJ0ZXN0IjoiYm9keSJ9",
     pathParameters: {
-      cardId: "value1",
+      storeName: "CoffeeLads",
     },
     isBase64Encoded: true,
     stageVariables: {
