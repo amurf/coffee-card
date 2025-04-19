@@ -18,6 +18,14 @@ export async function handler(
   }
 
   const card = await getCard(cardId)
+  if (!card) {
+    return {
+      statusCode: 404,
+      body: JSON.stringify({
+        message: "Card not found",
+      }),
+    }
+  }
 
   return {
     statusCode: 200,
