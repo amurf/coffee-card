@@ -6,7 +6,8 @@
   "scripts": {
     "prebuild": "rm -rf dist && tsc --noEmit",
     "build": "esbuild src/lambda/**/index.ts --bundle --minify --sourcemap --platform=node --target=es2020  --outdir=dist/lambda",
-    "seed:db": "tsx ./src/scripts/dynamo-seed-dev.ts"
+    "seed:db": "tsx ./src/scripts/dynamo-seed-dev.ts",
+    "run-lambda": "tsx ./src/scripts/run-lambda.ts"
   },
   "keywords": [],
   "author": "",
