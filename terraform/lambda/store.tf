@@ -1,5 +1,5 @@
-resource "aws_lambda_function" "get_card" {
-  function_name = "get-card"
+resource "aws_lambda_function" "store" {
+  function_name = "store"
   role          = aws_iam_role.lambda_execution_role.arn
   handler       = "index.handler"
   runtime       = "nodejs22.x"
@@ -7,10 +7,10 @@ resource "aws_lambda_function" "get_card" {
   s3_key        = aws_s3_object.lambda_default_code.key
 }
 
-output "lambda_get_card_arn" {
-  value = aws_lambda_function.get_card.arn
+output "store_arn" {
+  value = aws_lambda_function.store.arn
 }
 
-output "lambda_get_card_invoke_arn" {
-  value = aws_lambda_function.get_card.invoke_arn
+output "store_invoke_arn" {
+  value = aws_lambda_function.store.invoke_arn
 }

@@ -6,6 +6,7 @@ import { getCard } from "src/dynamo"
 export async function handler(
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> {
+  // TODO: make this handle more http methods / endpoints.
   const cardId = event.pathParameters?.cardId
 
   if (!cardId) {
