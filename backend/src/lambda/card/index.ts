@@ -2,34 +2,37 @@
 "use strict"
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
 import { getCardById } from "src/dynamo"
+import {
+  createLambdaError,
+  fetchItemAsLambdaResponse,
+  lambdaResponseToAPIGatewayProxyResult,
+  validateRequiredPathParameters,
+} from "src/lambda/helpers"
 
-export async function handler(
-  event: APIGatewayProxyEvent,
-): Promise<APIGatewayProxyResult> {
-  // TODO: make this handle more http methods / endpoints.
-  const cardId = event.pathParameters?.cardId
+const REQUIRED_PATH_PARAMETERS = ["cardId"] as const
 
-  if (!cardId) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "Card ID is required",
-      }),
-    }
+export async function handler({
+  pathParameters,
+}: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+  if (!pathParameters) {
+    return lambdaResponseToAPIGatewayProxyResult(
+      createLambdaError(
+        `Path parameters are required: ${REQUIRED_PATH_PARAMETERS.join(", ")}`,
+      ),
+    )
   }
 
-  const card = await getCardById(cardId)
-  if (!card) {
-    return {
-      statusCode: 404,
-      body: JSON.stringify({
-        message: "Card not found",
-      }),
-    }
+  const { valid: params, invalid: invalidParams } =
+    validateRequiredPathParameters(pathParameters, REQUIRED_PATH_PARAMETERS)
+
+  // Need to improve this error message.
+  if (invalidParams.length > 0) {
+    return lambdaResponseToAPIGatewayProxyResult(
+      createLambdaError(`Invalid path parameters: ${invalidParams.join(", ")}`),
+    )
   }
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(card),
-  }
+  return lambdaResponseToAPIGatewayProxyResult(
+    await fetchItemAsLambdaResponse(async () => getCardById(params.cardId)),
+  )
 }
