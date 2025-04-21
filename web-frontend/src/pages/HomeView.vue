@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/vue-query"
 // TODO: sort out how to get api url into app
 const apiUrl =
-  "https://8tlauhpjtf.execute-api.ap-southeast-2.amazonaws.com/dev/card/f47ac10b-58cc-4372-a567-0e02b2c3d479"
+  "https://8tlauhpjtf.execute-api.ap-southeast-2.amazonaws.com/dev/cards/f47ac10b-58cc-4372-a567-0e02b2c3d479"
 const fetchData = async () => {
   const response = await fetch(apiUrl)
   if (!response.ok) {
