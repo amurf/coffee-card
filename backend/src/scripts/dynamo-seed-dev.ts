@@ -1,24 +1,10 @@
-import { insertData } from "../dynamo"
-import { LoyaltyCard, StoreProfile } from "@coffee-card/shared"
+import { createNewCardForStore, createStore } from "../dynamo"
+
+const DEV_STORE_NAME = "Coffee Lads"
 
 async function seedDatabase() {
-  await insertData({
-    PK: "STORE#coffeelads",
-    SK: "PROFILE",
-    EntityType: "Store",
-    storeName: "Coffee Lads",
-    location: "Melbourne",
-  } as StoreProfile)
-
-  await insertData({
-    PK: "STORE#coffeelads",
-    SK: "CARD",
-    EntityType: "Card",
-    cardId: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-    storeName: "Coffee Lads",
-    issueDate: "2025-04-16",
-    coffeeCount: 0,
-  } as LoyaltyCard)
+  await createStore(DEV_STORE_NAME)
+  await createNewCardForStore(DEV_STORE_NAME)
 }
 
 seedDatabase()

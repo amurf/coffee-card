@@ -58,7 +58,7 @@ async function main() {
     },
     body: "eyJ0ZXN0IjoiYm9keSJ9",
     pathParameters: {
-      storeName: "CoffeeLads",
+      storeId: "COFFEELADS",
     },
     isBase64Encoded: true,
     stageVariables: {
