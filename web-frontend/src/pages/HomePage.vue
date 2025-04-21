@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useQuery } from "@tanstack/vue-query"
+import { apiBaseUrl } from "@/api"
+import type { StoreProfile } from "@coffee-card/shared"
 // TODO: sort out how to get api url into app
-const apiUrl =
-  "https://8tlauhpjtf.execute-api.ap-southeast-2.amazonaws.com/dev/cards/f47ac10b-58cc-4372-a567-0e02b2c3d479"
+const apiUrl = `${apiBaseUrl}/stores/COFFEELADS`
 const fetchData = async () => {
   const response = await fetch(apiUrl)
   if (!response.ok) {
@@ -11,7 +12,7 @@ const fetchData = async () => {
   return response.json()
 }
 
-const { data, error, isLoading } = useQuery({
+const { data, error, isLoading } = useQuery<StoreProfile>({
   queryKey: ["data"],
   queryFn: fetchData,
 })
