@@ -29,3 +29,7 @@ resource "aws_dynamodb_table" "coffee_card_data" {
 output "coffee_card_data_table_arn" {
   value = aws_dynamodb_table.coffee_card_data.arn
 }
+
+output "coffee_card_data_table_get_by_card_id_arn" {
+  value = "${aws_dynamodb_table.coffee_card_data.arn}/index/getByCardId"
+}

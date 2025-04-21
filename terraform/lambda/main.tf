@@ -37,7 +37,10 @@ resource "aws_iam_policy" "lambda_policy" {
           "dynamodb:PutItem",
         ]
         Effect = "Allow",
-        Resource = var.dynamodb_module.coffee_card_data_table_arn
+        Resource = [
+          var.dynamodb_module.coffee_card_data_table_arn,
+          var.dynamodb_module.coffee_card_data_table_get_by_card_id_arn,
+        ]
       },
       {
         Action = [

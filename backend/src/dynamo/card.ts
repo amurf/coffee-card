@@ -1,5 +1,5 @@
 import { LoyaltyCard } from "@coffee-card/shared"
-import { QueryCommand } from "@aws-sdk/lib-dynamodb"
+import { QueryCommand, PutCommand } from "@aws-sdk/lib-dynamodb"
 import { TABLE_NAME, TABLE_INDEXES, docClient } from "."
 
 export const getCardById = async (
@@ -21,4 +21,27 @@ export const getCardById = async (
   }
 
   return null
+}
+
+export const redeem = async (
+  cardId: LoyaltyCard["cardId"],
+  coffeeCount: number,
+): Promise<LoyaltyCard | null> => {
+  const card = await getCardById(cardId)
+  if (!card) {
+    return null
+  }
+
+  const updatedCard = {
+    ...card,
+    coffeeCount: card.coffeeCount + coffeeCount,
+  }
+
+  const command = new PutCommand({
+    TableName: TABLE_NAME,
+    Item: updatedCard,
+  })
+
+  await docClient.send(command)
+  return updatedCard
 }
