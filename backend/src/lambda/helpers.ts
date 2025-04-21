@@ -1,16 +1,41 @@
 import { LambdaResponse, LambdaResponseError } from "@coffee-card/shared"
 import {
   APIGatewayProxyEventPathParameters,
+  APIGatewayProxyEventQueryStringParameters,
   APIGatewayProxyResult,
 } from "aws-lambda"
 
-export function validateRequiredPathParameters<T extends readonly string[]>(
-  pathParameters: APIGatewayProxyEventPathParameters,
-  parameters: T,
+export function validateParameters<T extends readonly string[]>(
+  parameters:
+    | APIGatewayProxyEventPathParameters
+    | APIGatewayProxyEventQueryStringParameters
+    | null,
+  requiredParameters: T,
+): Record<T[number], string> {
+  if (!parameters) {
+    throw new Error(`Parameters are required: ${requiredParameters.join(", ")}`)
+  }
+
+  const { valid, invalid } = validateRequiredParameters(
+    parameters,
+    requiredParameters,
+  )
+  if (invalid.length > 0) {
+    throw new Error(`Invalid parameters: ${invalid.join(", ")}`)
+  }
+
+  return valid
+}
+
+export function validateRequiredParameters<T extends readonly string[]>(
+  parameters:
+    | APIGatewayProxyEventPathParameters
+    | APIGatewayProxyEventQueryStringParameters,
+  requiredParameters: T,
 ): { valid: Record<T[number], string>; invalid: string[] } {
-  return parameters.reduce(
+  return requiredParameters.reduce(
     (acc, parameter) => {
-      const value = pathParameters[parameter]
+      const value = parameters[parameter]
       if (value) {
         acc.valid[parameter as T[number]] = value
       } else {

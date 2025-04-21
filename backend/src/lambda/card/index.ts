@@ -6,7 +6,7 @@ import {
   createLambdaError,
   promiseToLambdaResponse,
   lambdaResponseToAPIGatewayProxyResult,
-  validateRequiredPathParameters,
+  validateParameters,
 } from "src/lambda/helpers"
 
 const REQUIRED_PATH_PARAMETERS = ["cardId"] as const
@@ -14,25 +14,16 @@ const REQUIRED_PATH_PARAMETERS = ["cardId"] as const
 export async function handler({
   pathParameters,
 }: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-  if (!pathParameters) {
-    return lambdaResponseToAPIGatewayProxyResult(
-      createLambdaError(
-        `Path parameters are required: ${REQUIRED_PATH_PARAMETERS.join(", ")}`,
-      ),
+  try {
+    const pathParams = validateParameters(
+      pathParameters,
+      REQUIRED_PATH_PARAMETERS,
     )
-  }
 
-  const { valid: params, invalid: invalidParams } =
-    validateRequiredPathParameters(pathParameters, REQUIRED_PATH_PARAMETERS)
-
-  // Need to improve this error message.
-  if (invalidParams.length > 0) {
     return lambdaResponseToAPIGatewayProxyResult(
-      createLambdaError(`Invalid path parameters: ${invalidParams.join(", ")}`),
+      await promiseToLambdaResponse(async () => getCardById(pathParams.cardId)),
     )
+  } catch (error) {
+    return lambdaResponseToAPIGatewayProxyResult(createLambdaError(`${error}`))
   }
-
-  return lambdaResponseToAPIGatewayProxyResult(
-    await promiseToLambdaResponse(async () => getCardById(params.cardId)),
-  )
 }

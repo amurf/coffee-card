@@ -3,7 +3,7 @@
 // This is useful for testing the lambda code locally without deploying it to AWS
 
 import { APIGatewayProxyEvent } from "aws-lambda"
-import { handler } from "../lambda/store"
+import { handler } from "../lambda/redeem"
 
 async function main() {
   const event: APIGatewayProxyEvent = {
@@ -13,7 +13,7 @@ async function main() {
     },
     queryStringParameters: {
       parameter1: "value1,value2",
-      parameter2: "value",
+      coffeeCount: "1",
     },
     requestContext: {
       accountId: "123456789012",
@@ -58,7 +58,7 @@ async function main() {
     },
     body: "eyJ0ZXN0IjoiYm9keSJ9",
     pathParameters: {
-      storeId: "hadoubrew",
+      cardId: "123",
     },
     isBase64Encoded: true,
     stageVariables: {

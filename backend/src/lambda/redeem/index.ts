@@ -6,52 +6,42 @@ import {
   createLambdaError,
   promiseToLambdaResponse,
   lambdaResponseToAPIGatewayProxyResult,
-  validateRequiredPathParameters,
+  validateParameters,
 } from "src/lambda/helpers"
 
 const REQUIRED_PATH_PARAMETERS = ["cardId"] as const
+const REQUIRED_QUERY_PARAMETERS = ["coffeeCount"] as const
 
 export async function handler({
   pathParameters,
   queryStringParameters,
 }: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-  if (!pathParameters) {
+  try {
+    const pathParams = validateParameters(
+      pathParameters,
+      REQUIRED_PATH_PARAMETERS,
+    )
+
+    const queryParams = validateParameters(
+      queryStringParameters,
+      REQUIRED_QUERY_PARAMETERS,
+    )
+
+    const coffeeCount = parseInt(queryParams.coffeeCount)
+    if (isNaN(coffeeCount) || coffeeCount <= 0) {
+      return lambdaResponseToAPIGatewayProxyResult(
+        createLambdaError(
+          `Invalid query parameter: coffeeCount must be a non-negative integer`,
+        ),
+      )
+    }
+
     return lambdaResponseToAPIGatewayProxyResult(
-      createLambdaError(
-        `Path parameters are required: ${REQUIRED_PATH_PARAMETERS.join(", ")}`,
+      await promiseToLambdaResponse(async () =>
+        redeem(pathParams.cardId, coffeeCount),
       ),
     )
+  } catch (error) {
+    return lambdaResponseToAPIGatewayProxyResult(createLambdaError(`${error}`))
   }
-
-  const { valid: params, invalid: invalidParams } =
-    validateRequiredPathParameters(pathParameters, REQUIRED_PATH_PARAMETERS)
-
-  // Need to improve this error message.
-  if (invalidParams.length > 0) {
-    return lambdaResponseToAPIGatewayProxyResult(
-      createLambdaError(`Invalid path parameters: ${invalidParams.join(", ")}`),
-    )
-  }
-
-  // Simplify validation of query parameters later.
-  if (!queryStringParameters?.coffeeCount) {
-    return lambdaResponseToAPIGatewayProxyResult(
-      createLambdaError(`Coffee count is required as a query parameter`),
-    )
-  }
-
-  const coffeeCount = parseInt(queryStringParameters.coffeeCount)
-  if (isNaN(coffeeCount) || coffeeCount <= 0) {
-    return lambdaResponseToAPIGatewayProxyResult(
-      createLambdaError(
-        `Invalid query parameter: coffeeCount must be a non-negative integer`,
-      ),
-    )
-  }
-
-  return lambdaResponseToAPIGatewayProxyResult(
-    await promiseToLambdaResponse(async () =>
-      redeem(params.cardId, coffeeCount),
-    ),
-  )
 }
