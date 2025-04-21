@@ -25,3 +25,7 @@ resource "aws_dynamodb_table" "coffee_card_data" {
     projection_type = "ALL"
   }
 }
+
+output "coffee_card_data_table_arn" {
+  value = aws_dynamodb_table.coffee_card_data.arn
+}

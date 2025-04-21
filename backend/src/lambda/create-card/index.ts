@@ -1,7 +1,7 @@
 // Lambda for handling card related operations
 "use strict"
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
-import { getStoreByName } from "src/dynamo"
+import { createNewCardForStore } from "src/dynamo"
 import {
   createLambdaError,
   promiseToLambdaResponse,
@@ -25,6 +25,7 @@ export async function handler({
   const { valid: params, invalid: invalidParams } =
     validateRequiredPathParameters(pathParameters, REQUIRED_PATH_PARAMETERS)
 
+  // Need to improve this error message.
   if (invalidParams.length > 0) {
     return lambdaResponseToAPIGatewayProxyResult(
       createLambdaError(`Invalid path parameters: ${invalidParams.join(", ")}`),
@@ -32,6 +33,8 @@ export async function handler({
   }
 
   return lambdaResponseToAPIGatewayProxyResult(
-    await promiseToLambdaResponse(async () => getStoreByName(params.storeId)),
+    await promiseToLambdaResponse(async () =>
+      createNewCardForStore(params.storeId),
+    ),
   )
 }

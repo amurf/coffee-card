@@ -25,7 +25,7 @@ export function validateRequiredPathParameters<T extends readonly string[]>(
   )
 }
 
-export async function fetchItemAsLambdaResponse<T>(
+export async function promiseToLambdaResponse<T>(
   getItem: () => Promise<T>,
 ): Promise<LambdaResponse<T>> {
   const item = await getItem()

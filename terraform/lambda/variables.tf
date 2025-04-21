@@ -1,4 +1,5 @@
 variable "lambda_deploy_bucket" {}
+variable "dynamodb_module" {}
 
 variable "lambda_key" {
   description = "S3 key for initial lambda code"

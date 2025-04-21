@@ -4,7 +4,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
 import { getCardById } from "src/dynamo"
 import {
   createLambdaError,
-  fetchItemAsLambdaResponse,
+  promiseToLambdaResponse,
   lambdaResponseToAPIGatewayProxyResult,
   validateRequiredPathParameters,
 } from "src/lambda/helpers"
@@ -33,6 +33,6 @@ export async function handler({
   }
 
   return lambdaResponseToAPIGatewayProxyResult(
-    await fetchItemAsLambdaResponse(async () => getCardById(params.cardId)),
+    await promiseToLambdaResponse(async () => getCardById(params.cardId)),
   )
 }

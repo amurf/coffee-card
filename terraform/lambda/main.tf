@@ -31,9 +31,12 @@ resource "aws_iam_policy" "lambda_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Action = "dynamodb:Query",
+        Action = [
+          "dynamodb:Query",
+          "dynamodb:PutItem",
+        ]
         Effect = "Allow",
-        Resource = "arn:aws:dynamodb:*:*:table/*"
+        Resource = var.dynamodb_module.coffee_card_data_table_arn
       },
       {
         Action = [

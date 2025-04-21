@@ -24,6 +24,7 @@ module "dynamodb" {
 module "lambda" {
   source = "./lambda"
   lambda_deploy_bucket = var.lambda_deploy_bucket
+  dynamodb_module = module.dynamodb
 }
 
 module "api-gateway" {
