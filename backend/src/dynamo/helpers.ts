@@ -3,9 +3,9 @@ import { docClient, TABLE_NAME } from "src/dynamo"
 
 export const storeNameToPK = (storeName: string): string => {
   const trimmedStoreName = storeName.replace(/[^a-zA-Z0-9]/g, "")
-  const upperCaseStoreName = trimmedStoreName.toUpperCase()
+  const lowerCaseStoreName = trimmedStoreName.toLocaleLowerCase()
 
-  return `STORE#${upperCaseStoreName}`
+  return `STORE#${lowerCaseStoreName}`
 }
 
 export const cardIdToSK = (cardId: string): string => {

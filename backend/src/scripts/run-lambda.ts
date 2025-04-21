@@ -58,7 +58,7 @@ async function main() {
     },
     body: "eyJ0ZXN0IjoiYm9keSJ9",
     pathParameters: {
-      storeId: "COFFEELADS",
+      storeId: "hadoubrew",
     },
     isBase64Encoded: true,
     stageVariables: {

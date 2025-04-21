@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/vue-query"
 import { apiBaseUrl } from "@/api"
 import type { StoreProfile } from "@coffee-card/shared"
 // TODO: sort out how to get api url into app
-const apiUrl = `${apiBaseUrl}/stores/COFFEELADS`
+const apiUrl = `${apiBaseUrl}/stores/hadoubrew`
 const fetchData = async () => {
   const response = await fetch(apiUrl)
   if (!response.ok) {

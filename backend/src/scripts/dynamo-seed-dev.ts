@@ -1,6 +1,6 @@
 import { createNewCardForStore, createStore } from "../dynamo"
 
-const DEV_STORE_NAME = "Coffee Lads"
+const DEV_STORE_NAME = "Hadoubrew"
 
 async function seedDatabase() {
   await createStore(DEV_STORE_NAME)
