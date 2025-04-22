@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { useQuery, useQueryClient, useMutation } from "@tanstack/vue-query"
 import { apiBaseUrl } from "@/api"
 import type { LoyaltyCard } from "@coffee-card/shared"
 import { useRoute } from "vue-router"
+import CardDescription from "@/components/ui/card/CardDescription.vue"
 // TODO: sort out how to get api url into app
 const route = useRoute()
 const cardId = route.params.cardId
@@ -54,6 +54,10 @@ const { mutate: redeem } = useMutation<LoyaltyCard>({
         <CardTitle>
           {{ data.storeName }}
         </CardTitle>
+        <CardDescription>
+          <!-- It's probably worth adding a city at the very least for the store -->
+          Tokyo
+        </CardDescription>
       </CardHeader>
       <CardContent>
         Count: {{ data.coffeeCount }} Freebies: {{ data.coffeesEarned }} Redeemed:
@@ -62,9 +66,9 @@ const { mutate: redeem } = useMutation<LoyaltyCard>({
       <CardFooter class="gap-1">
         <!-- TODO: redeem is probably need the right word here. -->
         <Button @click="() => redeem()">Redeem</Button>
-        <Button v-if="data.coffeesEarned" @click="() => redeem()"
-          >Claim up to {{ data.coffeesEarned }} free coffees!</Button
-        >
+        <Button v-if="data.coffeesEarned" @click="() => console.log('Claim via QR code?')">
+          Claim up to {{ data.coffeesEarned }} free coffees!
+        </Button>
       </CardFooter>
     </Card>
   </main>

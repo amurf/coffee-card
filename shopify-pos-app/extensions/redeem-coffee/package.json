@@ -1,0 +1,17 @@
+{
+  "name": "redeem-coffee",
+  "private": true,
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@coffee-card/shared": "file:../../../shared",
+    "@coffee-card/backend": "file:../../../backend",
+    "react": "^18.0.0",
+    "@shopify/ui-extensions": "2025.4.x",
+    "@shopify/ui-extensions-react": "2025.4.x",
+    "react-reconciler": "0.29.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0"
+  }
+}
