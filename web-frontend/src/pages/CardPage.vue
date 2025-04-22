@@ -26,7 +26,7 @@ const { data, error, isLoading } = useQuery<LoyaltyCard>({
 
 // Redeem mutation
 const queryClient = useQueryClient() // Initialize query client
-const redeemUrl = `${apiBaseUrl}/cards/${cardId}/redeem?coffeeCount=1`
+const redeemUrl = `${apiBaseUrl}/cards/${cardId}/redeem?coffeeCount=7`
 const { mutate: redeem } = useMutation<LoyaltyCard>({
   mutationFn: async () => {
     const response = await fetch(redeemUrl, {
@@ -55,9 +55,16 @@ const { mutate: redeem } = useMutation<LoyaltyCard>({
           {{ data.storeName }}
         </CardTitle>
       </CardHeader>
-      <CardContent> Count: {{ data.coffeeCount }} </CardContent>
-      <CardFooter>
+      <CardContent>
+        Count: {{ data.coffeeCount }} Freebies: {{ data.coffeesEarned }} Redeemed:
+        {{ data.coffeesRedeemed }}
+      </CardContent>
+      <CardFooter class="gap-1">
+        <!-- TODO: redeem is probably need the right word here. -->
         <Button @click="() => redeem()">Redeem</Button>
+        <Button v-if="data.coffeesEarned" @click="() => redeem()"
+          >Claim up to {{ data.coffeesEarned }} free coffees!</Button
+        >
       </CardFooter>
     </Card>
   </main>

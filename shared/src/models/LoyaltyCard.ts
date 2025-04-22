@@ -6,4 +6,6 @@ export interface LoyaltyCard {
   storeName: string
   issueDate: string
   coffeeCount: number
+  coffeesEarned: number
+  coffeesRedeemed: number
 }

@@ -35,6 +35,8 @@ export const createNewCardForStore = async (
     storeName: store.storeName,
     issueDate: new Date().toISOString(),
     coffeeCount: 0,
+    coffeesEarned: 0,
+    coffeesRedeemed: 0,
   }
 
   return await insertData(newCard)
