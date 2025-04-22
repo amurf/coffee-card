@@ -1,1 +1,1 @@
-export const apiBaseUrl = "https://rbu7gxqe6a.execute-api.ap-southeast-2.amazonaws.com/dev"
+export const apiBaseUrl = "https://rstij0f9ll.execute-api.ap-southeast-2.amazonaws.com/dev"

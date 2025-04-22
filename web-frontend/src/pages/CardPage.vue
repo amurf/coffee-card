@@ -1,9 +1,16 @@
 <script setup lang="ts">
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+
 import { useQuery, useQueryClient, useMutation } from "@tanstack/vue-query"
 import { apiBaseUrl } from "@/api"
 import type { LoyaltyCard } from "@coffee-card/shared"
+import { useRoute } from "vue-router"
 // TODO: sort out how to get api url into app
-const apiUrl = `${apiBaseUrl}/cards/b21c9815-82f5-4590-8330-7af6130e33ab`
+const route = useRoute()
+const cardId = route.params.cardId
+const apiUrl = `${apiBaseUrl}/cards/${cardId}`
 const fetchData = async () => {
   const response = await fetch(apiUrl)
   if (!response.ok) {
@@ -19,7 +26,7 @@ const { data, error, isLoading } = useQuery<LoyaltyCard>({
 
 // Redeem mutation
 const queryClient = useQueryClient() // Initialize query client
-const redeemUrl = `${apiBaseUrl}/cards/b21c9815-82f5-4590-8330-7af6130e33ab/redeem?coffeeCount=1`
+const redeemUrl = `${apiBaseUrl}/cards/${cardId}/redeem?coffeeCount=1`
 const { mutate: redeem } = useMutation<LoyaltyCard>({
   mutationFn: async () => {
     const response = await fetch(redeemUrl, {
@@ -41,11 +48,17 @@ const { mutate: redeem } = useMutation<LoyaltyCard>({
 </script>
 
 <template>
-  <main>
-    <h1>Card page</h1>
-    <pre>{{ data }}</pre>
-    <p v-if="error">{{ error }}</p>
-
-    <button @click="() => redeem()">Redeem</button>
+  <main class="m-2">
+    <Card v-if="data">
+      <CardHeader>
+        <CardTitle>
+          {{ data.storeName }}
+        </CardTitle>
+      </CardHeader>
+      <CardContent> Count: {{ data.coffeeCount }} </CardContent>
+      <CardFooter>
+        <Button @click="() => redeem()">Redeem</Button>
+      </CardFooter>
+    </Card>
   </main>
 </template>

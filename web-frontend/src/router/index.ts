@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
-import HomeView from "../pages/HomePage.vue"
 import CardPage from "../pages/CardPage.vue"
+import CreateCardPage from "../pages/CreateCardPage.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,7 +8,12 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
-      component: HomeView,
+      component: () => import("../pages/HomePage.vue"),
+    },
+    {
+      path: "/create-card/:storeId",
+      name: "create-card",
+      component: CreateCardPage,
     },
     {
       path: "/card/:cardId",

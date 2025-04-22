@@ -21,6 +21,7 @@ const { data, error, isLoading } = useQuery<StoreProfile>({
 <template>
   <main>
     <h1>Home page</h1>
+    <p>Probably a list of available stores + basic search goes here</p>
     <pre>{{ data }}</pre>
     <p v-if="error">{{ error }}</p>
   </main>
