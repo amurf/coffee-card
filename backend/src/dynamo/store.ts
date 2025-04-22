@@ -21,13 +21,18 @@ export const createNewCardForStore = async (
   storeName: string,
 ): Promise<LoyaltyCard> => {
   const cardId = crypto.randomUUID()
+  const store = await getStoreByName(storeName)
+
+  if (!store) {
+    throw new Error(`Store with name ${storeName} does not exist`)
+  }
 
   const newCard: LoyaltyCard = {
     PK: storeNameToPK(storeName),
     SK: cardIdToSK(cardId),
     EntityType: "Card",
     cardId,
-    storeName: storeName,
+    storeName: store.storeName,
     issueDate: new Date().toISOString(),
     coffeeCount: 0,
   }
