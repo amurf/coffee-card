@@ -1,5 +1,5 @@
 import { PutCommand, PutCommandOutput } from "@aws-sdk/lib-dynamodb"
-import { docClient, TABLE_NAME } from "src/dynamo"
+import { docClient, TABLE_NAME } from "."
 
 export const storeNameToPK = (storeName: string): string => {
   const trimmedStoreName = storeName.replace(/[^a-zA-Z0-9]/g, "")

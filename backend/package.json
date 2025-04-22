@@ -1,6 +1,8 @@
 {
-  "name": "backend",
+  "name": "@coffee-card/backend",
   "version": "1.0.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "description": "",
   "scripts": {
     "prebuild": "rm -rf dist && tsc --noEmit",
