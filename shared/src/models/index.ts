@@ -1,2 +1,2 @@
-export { LoyaltyCard } from "./LoyaltyCard"
-export { StoreProfile } from "./StoreProfile"
+export type { LoyaltyCard } from "./LoyaltyCard"
+export type { StoreProfile } from "./StoreProfile"
