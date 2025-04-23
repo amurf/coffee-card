@@ -3,7 +3,7 @@
 client_id = "7c8a462621f58682b434c3b3da61c035"
 name = "pos-app"
 handle = "pos-app-59"
-application_url = "https://souls-hidden-strings-our.trycloudflare.com"
+application_url = "https://terminals-relatively-downloaded-randy.trycloudflare.com"
 embedded = true
 
 [build]
@@ -27,9 +27,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://souls-hidden-strings-our.trycloudflare.com/auth/callback",
-  "https://souls-hidden-strings-our.trycloudflare.com/auth/shopify/callback",
-  "https://souls-hidden-strings-our.trycloudflare.com/api/auth/callback"
+  "https://terminals-relatively-downloaded-randy.trycloudflare.com/auth/callback",
+  "https://terminals-relatively-downloaded-randy.trycloudflare.com/auth/shopify/callback",
+  "https://terminals-relatively-downloaded-randy.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
