@@ -1,30 +1,16 @@
 <script setup lang="ts">
-import { useMutation, useQuery } from "@tanstack/vue-query"
-import { apiBaseUrl } from "@/api"
-import type { StoreProfile } from "@coffee-card/shared"
+import { useMutation } from "@tanstack/vue-query"
+import { createCard } from "@coffee-card/shared"
 import { useRoute, useRouter } from "vue-router"
 import { onMounted, ref } from "vue"
 // TODO: sort out how to get api url into app
-const apiUrl = `${apiBaseUrl}/stores/hadoubrew`
 const route = useRoute()
 const router = useRouter()
-const createCardUrl = `${apiBaseUrl}/stores/${route.params.storeId}/cards`
 
 const creating = ref(true)
 
-const { mutate: createCard, error } = useMutation({
-  mutationFn: async () => {
-    const response = await fetch(createCardUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    if (!response.ok) {
-      throw new Error("Network response was not ok")
-    }
-    return response.json()
-  },
+const { mutate, error } = useMutation({
+  mutationFn: () => createCard(route.params.storeId as string),
   onSuccess: (newData) => {
     creating.value = false
     setTimeout(() => {
@@ -34,7 +20,7 @@ const { mutate: createCard, error } = useMutation({
 })
 
 onMounted(() => {
-  createCard()
+  mutate()
 })
 </script>
 
