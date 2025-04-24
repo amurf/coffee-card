@@ -93,3 +93,14 @@ export function createLambdaError(
     },
   }
 }
+
+export function asDto<T, Y>(
+  mappingFn: (value: T) => Y,
+  value: T | null | undefined,
+): Y | null {
+  if (!value) {
+    return null
+  }
+
+  return mappingFn(value)
+}

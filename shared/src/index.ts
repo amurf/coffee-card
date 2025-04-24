@@ -1,3 +1,4 @@
-export * from "./models"
+export * from "./model"
+export * from "./dto"
 export * from "./lambda"
 export * from "./api"

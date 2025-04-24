@@ -1,5 +1,6 @@
 // Lambda for handling card related operations
 "use strict"
+import { toLoyaltyCardDto } from "@coffee-card/shared"
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
 import { createNewCardForStore } from "src/dynamo"
 import {
@@ -22,7 +23,7 @@ export async function handler({
 
     return lambdaResponseToAPIGatewayProxyResult(
       await promiseToLambdaResponse(async () =>
-        createNewCardForStore(pathParams.storeId),
+        toLoyaltyCardDto(await createNewCardForStore(pathParams.storeId)),
       ),
     )
   } catch (error) {

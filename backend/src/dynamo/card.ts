@@ -1,10 +1,10 @@
-import { LoyaltyCard } from "@coffee-card/shared"
+import { LoyaltyCardModel } from "@coffee-card/shared"
 import { QueryCommand, PutCommand } from "@aws-sdk/lib-dynamodb"
 import { TABLE_NAME, TABLE_INDEXES, docClient } from "."
 
 export const getCardById = async (
-  cardId: LoyaltyCard["cardId"],
-): Promise<LoyaltyCard | null> => {
+  cardId: LoyaltyCardModel["cardId"],
+): Promise<LoyaltyCardModel | null> => {
   const command = new QueryCommand({
     TableName: TABLE_NAME,
     IndexName: TABLE_INDEXES.GET_BY_CARD_ID,
@@ -17,16 +17,16 @@ export const getCardById = async (
   const response = await docClient.send(command)
 
   if (response.Items?.length) {
-    return response.Items[0] as LoyaltyCard
+    return response.Items[0] as LoyaltyCardModel
   }
 
   return null
 }
 
 export const redeem = async (
-  cardId: LoyaltyCard["cardId"],
+  cardId: LoyaltyCardModel["cardId"],
   coffeeCount: number,
-): Promise<LoyaltyCard | null> => {
+): Promise<LoyaltyCardModel | null> => {
   const card = await getCardById(cardId)
   if (!card) {
     return null

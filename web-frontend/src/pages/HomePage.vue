@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useQuery } from "@tanstack/vue-query"
-import { getStoreById, type StoreProfile } from "@coffee-card/shared"
+import { getStoreById } from "@coffee-card/shared"
 
-const { data, error, isLoading } = useQuery<StoreProfile>({
+const { data, error, isLoading } = useQuery({
   queryKey: ["data"],
   queryFn: () => getStoreById("hadoubrew"),
 })

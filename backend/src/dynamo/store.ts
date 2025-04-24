@@ -1,11 +1,13 @@
-import { LoyaltyCard, StoreProfile } from "@coffee-card/shared"
+import { LoyaltyCardModel, StoreProfileModel } from "@coffee-card/shared"
 import { QueryCommand, GetCommand } from "@aws-sdk/lib-dynamodb"
 import { cardIdToSK, insertData, storeNameToPK } from "./helpers"
 import { TABLE_NAME, docClient } from "."
 
-export async function createStore(storeName: string): Promise<StoreProfile> {
+export async function createStore(
+  storeName: string,
+): Promise<StoreProfileModel> {
   const storeId = crypto.randomUUID()
-  const storeProfile: StoreProfile = {
+  const storeProfile: StoreProfileModel = {
     PK: storeNameToPK(storeName),
     SK: "PROFILE",
     EntityType: "Store",
@@ -19,7 +21,7 @@ export async function createStore(storeName: string): Promise<StoreProfile> {
 
 export const createNewCardForStore = async (
   storeName: string,
-): Promise<LoyaltyCard> => {
+): Promise<LoyaltyCardModel> => {
   const cardId = crypto.randomUUID()
   const store = await getStoreByName(storeName)
 
@@ -27,7 +29,7 @@ export const createNewCardForStore = async (
     throw new Error(`Store with name ${storeName} does not exist`)
   }
 
-  const newCard: LoyaltyCard = {
+  const newCard: LoyaltyCardModel = {
     PK: storeNameToPK(storeName),
     SK: cardIdToSK(cardId),
     EntityType: "Card",
@@ -44,7 +46,7 @@ export const createNewCardForStore = async (
 
 export const getStoreByName = async (
   storeName: string,
-): Promise<StoreProfile | null> => {
+): Promise<StoreProfileModel | null> => {
   const command = new GetCommand({
     TableName: TABLE_NAME,
     Key: {
@@ -59,12 +61,12 @@ export const getStoreByName = async (
     return null
   }
 
-  return response.Item as StoreProfile
+  return response.Item as StoreProfileModel
 }
 
 export const getStoreCards = async (
   storeName: string,
-): Promise<LoyaltyCard[]> => {
+): Promise<LoyaltyCardModel[]> => {
   const command = new QueryCommand({
     TableName: TABLE_NAME,
     KeyConditionExpression: "PK = :pk AND begins_with(SK, :skPrefix)",
@@ -76,7 +78,7 @@ export const getStoreCards = async (
 
   const response = await docClient.send(command)
   if (response.Items?.length) {
-    return response.Items as LoyaltyCard[]
+    return response.Items as LoyaltyCardModel[]
   }
 
   return []

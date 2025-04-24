@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { useQuery, useQueryClient, useMutation } from "@tanstack/vue-query"
-import type { LoyaltyCard } from "@coffee-card/shared"
 import { redeemPurchase, getCardById } from "@coffee-card/shared"
 import { useRoute } from "vue-router"
 import CardDescription from "@/components/ui/card/CardDescription.vue"
@@ -32,17 +31,18 @@ async function generateQRCode() {
 }
 onMounted(() => {
   generateQRCode()
+  console.log("Generated!")
 })
 
-const { data, error, isLoading } = useQuery<LoyaltyCard>({
+const { data, error, isLoading } = useQuery({
   queryKey: ["data"],
   queryFn: () => getCardById(cardId as string),
 })
 
 // Redeem mutation
 const queryClient = useQueryClient() // Initialize query client
-const { mutate: redeem } = useMutation<LoyaltyCard>({
-  mutationFn: () => redeemPurchase(cardId as string),
+const { mutate: redeem } = useMutation({
+  mutationFn: () => redeemPurchase(cardId as string, 5),
   onSuccess: (newData) => {
     queryClient.setQueryData(["data"], newData)
     alert("Card redeemed successfully")
