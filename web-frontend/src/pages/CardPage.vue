@@ -45,7 +45,6 @@ const { mutate: redeem } = useMutation({
   mutationFn: () => redeemPurchase(cardId as string, 5),
   onSuccess: (newData) => {
     queryClient.setQueryData(["data"], newData)
-    alert("Card redeemed successfully")
   },
 })
 </script>
