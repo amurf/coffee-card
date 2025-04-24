@@ -1,15 +1,15 @@
 // Lambda for handling card related operations
 "use strict"
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
-import { getCardById } from "src/dynamo"
 import { toLoyaltyCardDto } from "@coffee-card/shared"
+import { getCardById } from "../../dynamo"
 import {
   createLambdaError,
   promiseToLambdaResponse,
   lambdaResponseToAPIGatewayProxyResult,
   validateParameters,
   asDto,
-} from "src/lambda/helpers"
+} from "../helpers"
 
 const REQUIRED_PATH_PARAMETERS = ["cardId"] as const
 

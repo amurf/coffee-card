@@ -1,15 +1,15 @@
 // Lambda for handling card related operations
 "use strict"
-import { toStoreProfileDto } from "@coffee-card/shared/src/dto/StoreProfile"
+import { toStoreProfileDto } from "@coffee-card/shared"
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
-import { getStoreByName } from "src/dynamo"
+import { getStoreByName } from "../../dynamo"
 import {
   createLambdaError,
   promiseToLambdaResponse,
   lambdaResponseToAPIGatewayProxyResult,
   validateParameters,
   asDto,
-} from "src/lambda/helpers"
+} from "../helpers"
 
 const REQUIRED_PATH_PARAMETERS = ["storeId"] as const
 

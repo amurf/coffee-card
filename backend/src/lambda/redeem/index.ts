@@ -2,14 +2,14 @@
 "use strict"
 import { toLoyaltyCardDto } from "@coffee-card/shared"
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
-import { redeem } from "src/dynamo"
+import { redeem } from "../../dynamo"
 import {
   asDto,
   createLambdaError,
   promiseToLambdaResponse,
   lambdaResponseToAPIGatewayProxyResult,
   validateParameters,
-} from "src/lambda/helpers"
+} from "../helpers"
 
 const REQUIRED_PATH_PARAMETERS = ["cardId"] as const
 const REQUIRED_QUERY_PARAMETERS = ["coffeeCount"] as const
