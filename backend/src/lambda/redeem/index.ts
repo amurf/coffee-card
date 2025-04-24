@@ -1,49 +1,39 @@
 // Lambda for handling card related operations
 "use strict"
-import { toLoyaltyCardDto } from "@coffee-card/shared"
+import {
+  RedeemParamsSchema,
+  RedeemQueryParamsSchema,
+  toLoyaltyCardDto,
+} from "@coffee-card/shared"
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
 import { redeem } from "../../dynamo"
 import {
   asDto,
-  createLambdaError,
   promiseToLambdaResponse,
   lambdaResponseToAPIGatewayProxyResult,
-  validateParameters,
 } from "../helpers"
-
-const REQUIRED_PATH_PARAMETERS = ["cardId"] as const
-const REQUIRED_QUERY_PARAMETERS = ["coffeeCount"] as const
+import { validateParameters, handleErrors } from "../error"
 
 export async function handler({
   pathParameters,
   queryStringParameters,
 }: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   try {
-    const pathParams = validateParameters(
-      pathParameters,
-      REQUIRED_PATH_PARAMETERS,
-    )
-
+    const pathParams = validateParameters(pathParameters, RedeemParamsSchema)
     const queryParams = validateParameters(
       queryStringParameters,
-      REQUIRED_QUERY_PARAMETERS,
+      RedeemQueryParamsSchema,
     )
-
-    const coffeeCount = parseInt(queryParams.coffeeCount)
-    if (isNaN(coffeeCount) || coffeeCount <= 0) {
-      return lambdaResponseToAPIGatewayProxyResult(
-        createLambdaError(
-          `Invalid query parameter: coffeeCount must be a non-negative integer`,
-        ),
-      )
-    }
 
     return lambdaResponseToAPIGatewayProxyResult(
       await promiseToLambdaResponse(async () =>
-        asDto(toLoyaltyCardDto, await redeem(pathParams.cardId, coffeeCount)),
+        asDto(
+          toLoyaltyCardDto,
+          await redeem(pathParams.cardId, queryParams.coffeeCount),
+        ),
       ),
     )
   } catch (error) {
-    return lambdaResponseToAPIGatewayProxyResult(createLambdaError(`${error}`))
+    return lambdaResponseToAPIGatewayProxyResult(handleErrors(error))
   }
 }

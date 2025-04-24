@@ -18,3 +18,17 @@ export const toStoreProfileDto = (
     location: model.location,
   }
 }
+
+export const GetStoreParamsSchema = z.object({
+  storeId: z.string(),
+})
+
+export type GetStoreParams = z.infer<typeof CreateCardForStoreParamsSchema>
+
+export const CreateCardForStoreParamsSchema = z.object({
+  storeId: z.string(),
+})
+
+export type CreateCardForStoreParams = z.infer<
+  typeof CreateCardForStoreParamsSchema
+>

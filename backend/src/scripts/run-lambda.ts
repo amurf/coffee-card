@@ -58,7 +58,7 @@ async function main() {
     },
     body: "eyJ0ZXN0IjoiYm9keSJ9",
     pathParameters: {
-      cardId: "123",
+      cardId: "0ab9ada9-93ed-4603-b833-8c509c165e8e",
     },
     isBase64Encoded: true,
     stageVariables: {

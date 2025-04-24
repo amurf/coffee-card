@@ -1,26 +1,20 @@
 // Lambda for handling card related operations
 "use strict"
-import { toStoreProfileDto } from "@coffee-card/shared"
+import { GetStoreParamsSchema, toStoreProfileDto } from "@coffee-card/shared"
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
 import { getStoreByName } from "../../dynamo"
 import {
-  createLambdaError,
   promiseToLambdaResponse,
   lambdaResponseToAPIGatewayProxyResult,
-  validateParameters,
   asDto,
 } from "../helpers"
-
-const REQUIRED_PATH_PARAMETERS = ["storeId"] as const
+import { validateParameters, handleErrors } from "../error"
 
 export async function handler({
   pathParameters,
 }: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   try {
-    const pathParams = validateParameters(
-      pathParameters,
-      REQUIRED_PATH_PARAMETERS,
-    )
+    const pathParams = validateParameters(pathParameters, GetStoreParamsSchema)
 
     return lambdaResponseToAPIGatewayProxyResult(
       await promiseToLambdaResponse(async () =>
@@ -28,6 +22,6 @@ export async function handler({
       ),
     )
   } catch (error) {
-    return lambdaResponseToAPIGatewayProxyResult(createLambdaError(`${error}`))
+    return lambdaResponseToAPIGatewayProxyResult(handleErrors(error))
   }
 }
