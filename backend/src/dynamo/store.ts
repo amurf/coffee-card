@@ -72,7 +72,7 @@ export const getStoreCards = async (
     TableName: TABLE_NAME,
     KeyConditionExpression: "PK = :pk AND begins_with(SK, :skPrefix)",
     ExpressionAttributeValues: {
-      ":pk": `STORE#${storeName}`,
+      ":pk": storeNameToPK(storeName),
       ":skPrefix": "CARD#",
     },
   })

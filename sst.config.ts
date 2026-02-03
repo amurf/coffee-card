@@ -51,10 +51,18 @@ export default $config({
     api.url.apply((url) => {
       table.name.apply((tableName) => {
         const fs = require("fs");
-        fs.writeFileSync(
-          ".env",
-          `TABLE_NAME=${tableName}\nVITE_API_URL=${url}\n`
-        );
+        
+        // Root (Master)
+        fs.writeFileSync(".env", `TABLE_NAME=${tableName}\nVITE_API_URL=${url}\n`);
+
+        // Frontend (Needs API URL)
+        fs.writeFileSync("web-frontend/.env", `VITE_API_URL=${url}\n`);
+
+        // Backend (Needs Table Name)
+        fs.writeFileSync("backend/.env", `TABLE_NAME=${tableName}\n`);
+
+        // Shopify POS App (Needs Table Name for local DB calls, and API URL)
+        fs.writeFileSync("shopify-pos-app/.env", `TABLE_NAME=${tableName}\nVITE_API_URL=${url}\n`);
       });
     });
 

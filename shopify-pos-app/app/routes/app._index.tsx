@@ -22,9 +22,30 @@ import {
 } from "@coffee-card/shared"
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { session } = await authenticate.admin(request)
+  const { session, admin } = await authenticate.admin(request)
 
   const shop = session.shop.split(".")[0]
+
+  const response = await admin.graphql(
+    `#graphql
+      query getShopDetails {
+        shop {
+          name
+          email
+          primaryDomain {
+            url
+          }
+          billingAddress {
+            city
+            country
+          }
+          currencyCode
+        }
+      }
+    `,
+  )
+
+  const responseJson = await response.json()
 
   console.log(shop)
   const shopDetails = await getStoreByName(shop)
@@ -34,32 +55,29 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     throw new Response("Not found", { status: 404 })
   }
 
-  const response = {
+  return {
     shop: toStoreProfileDto(shopDetails),
-    cards: [] as LoyaltyCardDto[],
+    shopifyDetails: responseJson.data.shop,
+    cards: cards ? cards.map((card) => toLoyaltyCardDto(card)) : ([] as LoyaltyCardDto[]),
   }
-
-  if (cards) {
-    response.cards = cards.map((card) => toLoyaltyCardDto(card))
-  }
-
-  return response
 }
 
 function EditStoreNameForm({ store }: { store: StoreProfileDto }) {
   return (
     <BlockStack gap="200">
-      <Text as="h2" variant="headingMd">
-        Edit store name
+      <Text as="h2" variant="headingSm">
+        Program Display Name
       </Text>
       <form method="post">
         <BlockStack gap="200">
           <TextField
             label="Store name"
+            labelHidden
             value={store.storeName}
             type="text"
             name="storeName"
             autoComplete="off"
+            helpText="This is the name customers will see on their loyalty card."
           />
           <Button submit>Update name</Button>
         </BlockStack>
@@ -68,20 +86,44 @@ function EditStoreNameForm({ store }: { store: StoreProfileDto }) {
   )
 }
 
-// Edit form component for editing store name
-function StoreDetails({ store }: { store: StoreProfileDto }) {
+function StoreDetailsCard({
+  store,
+  shopifyDetails,
+}: {
+  store: StoreProfileDto
+  shopifyDetails: any
+}) {
   return (
-    <BlockStack gap="200">
-      <EditStoreNameForm store={store} />
-      <InlineStack gap="200" align="space-between">
-        <Text as="span" variant="bodyMd">
-          Location
-        </Text>
-        <Text as="span" variant="bodyMd">
-          {store.location}
-        </Text>
-      </InlineStack>
-    </BlockStack>
+    <Card>
+      <BlockStack gap="500">
+        <BlockStack gap="200">
+          <Text as="h2" variant="headingLg">
+            {shopifyDetails.name}
+          </Text>
+          <Text as="p" tone="subdued">
+            {shopifyDetails.primaryDomain.url}
+          </Text>
+        </BlockStack>
+
+        <BlockStack gap="200">
+          <Text as="h3" variant="headingSm">
+            Billing
+          </Text>
+          <Text as="p">
+            {shopifyDetails.billingAddress.city}, {shopifyDetails.billingAddress.country}
+          </Text>
+          <Text as="p">Currency: {shopifyDetails.currencyCode}</Text>
+        </BlockStack>
+
+        <EditStoreNameForm store={store} />
+
+        <InlineStack gap="200" align="start">
+             <Text as="span" variant="bodySm" tone="subdued">
+                Internal Store ID: {store.storeId}
+             </Text>
+        </InlineStack>
+      </BlockStack>
+    </Card>
   )
 }
 
@@ -105,7 +147,7 @@ function Cards({ cards }: { cards: LoyaltyCardDto[] }) {
 }
 
 export default function Index() {
-  const { shop, cards } = useLoaderData<typeof loader>()
+  const { shop, shopifyDetails, cards } = useLoaderData<typeof loader>()
 
   return (
     <Page>
@@ -114,14 +156,12 @@ export default function Index() {
         <Layout>
           <Layout.Section>
             <BlockStack gap="500">
-              <Card>
                 <BlockStack gap="200">
                   <Text as="h2" variant="headingMd">
                     Store details
                   </Text>
-                  <StoreDetails store={shop} />
+                  <StoreDetailsCard store={shop} shopifyDetails={shopifyDetails} />
                 </BlockStack>
-              </Card>
             </BlockStack>
             <BlockStack gap="500">
               <Card>
