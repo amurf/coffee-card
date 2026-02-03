@@ -52,9 +52,6 @@ export default $config({
       table.name.apply((tableName) => {
         const fs = require("fs");
         
-        // Root (Master)
-        fs.writeFileSync(".env", `TABLE_NAME=${tableName}\nVITE_API_URL=${url}\n`);
-
         // Frontend (Needs API URL)
         fs.writeFileSync("web-frontend/.env", `VITE_API_URL=${url}\n`);
 

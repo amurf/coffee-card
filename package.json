@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "sst dev --print-logs",
+    "dev": "sst dev",
+    "down": "sst remove",
     "deploy": "sst deploy",
-    "sst:rm": "sst remove",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -18,6 +18,6 @@
   },
   "devDependencies": {
     "prettier": "3.8.1",
-    "sst": "^3.0.0"
+    "sst": "^3.17.38"
   }
 }

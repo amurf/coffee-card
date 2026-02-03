@@ -7,8 +7,8 @@
   "scripts": {
     "prebuild": "rm -rf dist && tsc --noEmit",
     "build": "esbuild src/lambda/**/index.ts --bundle --platform=node --outdir=dist/lambda",
-    "seed:db": "tsx ./src/scripts/dynamo-seed-dev.ts",
-    "run-lambda": "tsx ./src/scripts/run-lambda.ts"
+    "seed:db": "tsx --env-file=.env ./src/scripts/dynamo-seed-dev.ts",
+    "run-lambda": "tsx --env-file=.env ./src/scripts/run-lambda.ts"
   },
   "keywords": [],
   "author": "",

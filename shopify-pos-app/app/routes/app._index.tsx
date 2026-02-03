@@ -1,5 +1,5 @@
 import { type LoaderFunctionArgs } from "@remix-run/node"
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData, useNavigate } from "@remix-run/react"
 import {
   Page,
   Layout,
@@ -24,7 +24,7 @@ import {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { session, admin } = await authenticate.admin(request)
 
-  const shop = session.shop.split(".")[0]
+  const shop =  session.shop.split(".")[0]
 
   const response = await admin.graphql(
     `#graphql
@@ -148,10 +148,15 @@ function Cards({ cards }: { cards: LoyaltyCardDto[] }) {
 
 export default function Index() {
   const { shop, shopifyDetails, cards } = useLoaderData<typeof loader>()
+  const navigate = useNavigate()
 
   return (
     <Page>
-      <TitleBar title="Dashboard" />
+      <TitleBar title="Dashboard">
+        <button variant="primary" onClick={() => navigate("/app/scan")}>
+          Scan Card
+        </button>
+      </TitleBar>
       <BlockStack gap="500">
         <Layout>
           <Layout.Section>
