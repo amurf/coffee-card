@@ -69,6 +69,7 @@ resource "aws_cloudfront_distribution" "web_frontend_distribution" {
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = "webFrontendS3Origin"
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.security_headers.id
 
     viewer_protocol_policy = "redirect-to-https"
 
@@ -97,15 +98,48 @@ resource "aws_cloudfront_distribution" "web_frontend_distribution" {
     cloudfront_default_certificate = true
   }
 
+
+
   restrictions {
     geo_restriction {
       restriction_type = "none"
     }
   }
+}
 
-  tags = {
-    Environment = "dev"
+resource "aws_cloudfront_response_headers_policy" "security_headers" {
+  name = "security-headers-policy"
+
+  security_headers_config {
+    content_type_options {
+      override = true
+    }
+    frame_options {
+      frame_option = "DENY"
+      override     = true
+    }
+    referrer_policy {
+      referrer_policy = "strict-origin-when-cross-origin"
+      override        = true
+    }
+    xss_protection {
+      mode_block = true
+      protection = true
+      override   = true
+    }
+    strict_transport_security {
+      access_control_max_age_sec = 31536000
+      include_subdomains         = true
+      preload                    = true
+      override                   = true
+    }
+    content_security_policy {
+      content_security_policy = "default-src 'none'; img-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'"
+      override                = true
+    }
   }
+
+
 }
 
 output "website_url" {
