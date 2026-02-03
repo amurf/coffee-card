@@ -11,6 +11,7 @@ export default defineConfig({
     allowedHosts: ["localhost", ".a.free.pinggy.link"],
   },
   plugins: [vue(), vueDevTools(), tailwindcss()],
+  envDir: "..",
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

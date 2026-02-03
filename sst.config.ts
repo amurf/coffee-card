@@ -48,6 +48,16 @@ export default $config({
       ...routeConfig,
     });
 
+    api.url.apply((url) => {
+      table.name.apply((tableName) => {
+        const fs = require("fs");
+        fs.writeFileSync(
+          ".env",
+          `TABLE_NAME=${tableName}\nVITE_API_URL=${url}\n`
+        );
+      });
+    });
+
     return {
       ApiEndpoint: api.url,
     };
