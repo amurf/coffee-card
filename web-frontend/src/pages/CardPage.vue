@@ -30,6 +30,9 @@ async function generateQRCode() {
 }
 onMounted(() => {
   generateQRCode()
+  if (cardId) {
+    localStorage.setItem("last-viewed-card-id", cardId as string)
+  }
   console.log("Generated!")
 })
 

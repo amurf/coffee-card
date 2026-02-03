@@ -13,6 +13,7 @@ const { mutate, error } = useMutation({
   mutationFn: () => createCard(route.params.storeId as string),
   onSuccess: (newData) => {
     creating.value = false
+    localStorage.setItem("last-viewed-card-id", newData.cardId)
     setTimeout(() => {
       router.push(`/card/${newData.cardId}`)
     }, 1000)
