@@ -1,0 +1,62 @@
+time=2026-02-03T16:44:32.645+11:00 level=INFO msg="checking for pulumi" path="/Users/ash/Library/Application Support/sst/bin/pulumi"
+time=2026-02-03T16:44:33.413+11:00 level=INFO msg="checking for bun" path="/Users/ash/Library/Application Support/sst/bin/bun"
+time=2026-02-03T16:44:33.426+11:00 level=INFO msg="initializing project" version=3.17.38
+time=2026-02-03T16:44:33.426+11:00 level=INFO msg="esbuild building" out=/Users/ash/src/coffee-card/.sst/platform/sst.config.1770097473426.mjs
+time=2026-02-03T16:44:33.429+11:00 level=INFO msg="esbuild built" outfile=/Users/ash/src/coffee-card/.sst/platform/sst.config.1770097473426.mjs
+time=2026-02-03T16:44:33.429+11:00 level=INFO msg="evaluating config"
+time=2026-02-03T16:44:33.458+11:00 level=INFO msg="config evaluated"
+time=2026-02-03T16:44:33.459+11:00 level=INFO msg="checking platform"
+time=2026-02-03T16:44:33.459+11:00 level=INFO msg="loading home"
+time=2026-02-03T16:44:33.459+11:00 level=INFO msg="aws credentials found" region=ap-southeast-2 profile=""
+time=2026-02-03T16:44:33.459+11:00 level=INFO msg="fetching bootstrap"
+time=2026-02-03T16:44:33.568+11:00 level=INFO msg="found existing bootstrap" data="{\"version\":5,\"asset\":\"sst-asset-ovfrswczrksz\",\"assetEcrRegistryId\":\"309830656516\",\"assetEcrUrl\":\"309830656516.dkr.ecr.ap-southeast-2.amazonaws.com/sst-asset\",\"state\":\"sst-state-ovfrswczrksz\",\"appsyncHttp\":\"\",\"appsyncRealtime\":\"\"}"
+time=2026-02-03T16:44:33.568+11:00 level=INFO msg="loaded config" app=coffee-card stage=ash
+time=2026-02-03T16:44:33.568+11:00 level=INFO msg="initializing ui" isTTY=true
+time=2026-02-03T16:44:33.569+11:00 level=INFO msg="server port assigned" port=13557
+time=2026-02-03T16:44:33.569+11:00 level=INFO msg=starting service=server
+time=2026-02-03T16:44:33.569+11:00 level=INFO msg="running stack command" service=project.run cmd=remove
+time=2026-02-03T16:44:33.569+11:00 level=INFO msg="INFO locking app=coffee-card stage=ash"
+time=2026-02-03T16:44:33.569+11:00 level=INFO msg="INFO getting data key=lock app=coffee-card stage=ash"
+time=2026-02-03T16:44:33.570+11:00 level=INFO msg=server service=server addr=0.0.0.0:13557
+time=2026-02-03T16:44:33.776+11:00 level=INFO msg="INFO putting update app=coffee-card stage=ash"
+time=2026-02-03T16:44:33.880+11:00 level=INFO msg="INFO getting passphrase app=coffee-card stage=ash"
+time=2026-02-03T16:44:33.999+11:00 level=INFO msg="INFO pulling state app=coffee-card stage=ash out=/Users/ash/src/coffee-card/.sst/pulumi/fe63ddf807de1098109d76ae/.pulumi/stacks/coffee-card/ash.json"
+time=2026-02-03T16:44:34.377+11:00 level=INFO msg="got previous deployment" service=project.run updateID=fe63ddf807de1098109d76ae
+time=2026-02-03T16:44:34.377+11:00 level=INFO msg="esbuild building" out=/Users/ash/src/coffee-card/.sst/platform/sst.config.1770097473996.mjs
+time=2026-02-03T16:44:34.403+11:00 level=INFO msg="esbuild built" outfile=/Users/ash/src/coffee-card/.sst/platform/sst.config.1770097473996.mjs
+time=2026-02-03T16:44:34.408+11:00 level=INFO msg="built sst.config.ts" service=project.run updateID=fe63ddf807de1098109d76ae to=/Users/ash/src/coffee-card/.sst/platform/sst.config.1770097473996.mjs
+time=2026-02-03T16:44:34.410+11:00 level=INFO msg="tracked files" service=project.run updateID=fe63ddf807de1098109d76ae
+time=2026-02-03T16:44:34.410+11:00 level=INFO msg="INFO getting data key=secret app=coffee-card stage=_fallback"
+time=2026-02-03T16:44:34.410+11:00 level=INFO msg="INFO getting data key=secret app=coffee-card stage=ash"
+time=2026-02-03T16:44:34.500+11:00 level=INFO msg="starting pulumi" service=project.run updateID=fe63ddf807de1098109d76ae args="[/Users/ash/Library/Application Support/sst/bin/pulumi destroy --yes -f --stack organization/coffee-card/ash --non-interactive --event-log /Users/ash/src/coffee-card/.sst/pulumi/fe63ddf807de1098109d76ae/eventlog.json]"
+time=2026-02-03T16:44:36.121+11:00 level=INFO msg="INFO pushing partial state updateID=fe63ddf807de1098109d76ae"
+time=2026-02-03T16:44:36.325+11:00 level=INFO msg="INFO pushing partial state updateID=fe63ddf807de1098109d76ae"
+time=2026-02-03T16:44:36.494+11:00 level=INFO msg="INFO pushing partial state updateID=fe63ddf807de1098109d76ae"
+time=2026-02-03T16:44:36.686+11:00 level=INFO msg="INFO pushing partial state updateID=fe63ddf807de1098109d76ae"
+time=2026-02-03T16:44:36.875+11:00 level=INFO msg="INFO pushing partial state updateID=fe63ddf807de1098109d76ae"
+time=2026-02-03T16:44:39.253+11:00 level=INFO msg="INFO pushing partial state updateID=fe63ddf807de1098109d76ae"
+time=2026-02-03T16:44:39.416+11:00 level=INFO msg="INFO pushing partial state updateID=fe63ddf807de1098109d76ae"
+time=2026-02-03T16:44:39.758+11:00 level=INFO msg="INFO pushing partial state updateID=fe63ddf807de1098109d76ae"
+time=2026-02-03T16:44:39.910+11:00 level=INFO msg="INFO pushing partial state updateID=fe63ddf807de1098109d76ae"
+time=2026-02-03T16:44:40.771+11:00 level=INFO msg="INFO pushing partial state updateID=fe63ddf807de1098109d76ae"
+time=2026-02-03T16:44:52.672+11:00 level=INFO msg="INFO pushing partial state updateID=fe63ddf807de1098109d76ae"
+time=2026-02-03T16:44:52.697+11:00 level=INFO msg="pulumi exited" service=project.run updateID=fe63ddf807de1098109d76ae err=<nil>
+time=2026-02-03T16:44:52.697+11:00 level=INFO msg="eof and exited" service=project.run updateID=fe63ddf807de1098109d76ae eofs=0
+time=2026-02-03T16:44:52.697+11:00 level=INFO msg="eof and exited" service=project.run updateID=fe63ddf807de1098109d76ae eofs=1
+time=2026-02-03T16:44:52.697+11:00 level=INFO msg="breaking out of tail loop" service=project.run updateID=fe63ddf807de1098109d76ae
+time=2026-02-03T16:44:52.697+11:00 level=INFO msg="parsing state" service=project.run updateID=fe63ddf807de1098109d76ae
+time=2026-02-03T16:44:52.697+11:00 level=INFO msg="generating types" root=/Users/ash/src/coffee-card
+time=2026-02-03T16:44:52.706+11:00 level=INFO msg="canceling partial" service=project.run updateID=fe63ddf807de1098109d76ae
+time=2026-02-03T16:44:52.706+11:00 level=INFO msg="waiting for partial to exit" service=project.run updateID=fe63ddf807de1098109d76ae
+time=2026-02-03T16:44:52.780+11:00 level=INFO msg="INFO pushing partial state updateID=fe63ddf807de1098109d76ae"
+time=2026-02-03T16:44:52.884+11:00 level=INFO msg="INFO pushing eventlog updateID=fe63ddf807de1098109d76ae"
+time=2026-02-03T16:44:52.884+11:00 level=INFO msg="INFO pushing snapshot updateID=fe63ddf807de1098109d76ae"
+time=2026-02-03T16:44:53.059+11:00 level=INFO msg="INFO putting update app=coffee-card stage=ash"
+time=2026-02-03T16:44:53.167+11:00 level=INFO msg="cleaning up folder" bucket=sst-state-ovfrswczrksz prefix=eventlog/coffee-card/ash/
+time=2026-02-03T16:44:53.336+11:00 level=INFO msg="folder cleanup complete" prefix=eventlog/coffee-card/ash/
+time=2026-02-03T16:44:53.336+11:00 level=INFO msg="cleaning up folder" bucket=sst-state-ovfrswczrksz prefix=snapshot/coffee-card/ash/
+time=2026-02-03T16:44:53.488+11:00 level=INFO msg="folder cleanup complete" prefix=snapshot/coffee-card/ash/
+time=2026-02-03T16:44:53.488+11:00 level=INFO msg="done running stack command" service=project.run updateID=fe63ddf807de1098109d76ae resources=0
+time=2026-02-03T16:44:53.494+11:00 level=INFO msg="INFO unlocking app=coffee-card stage=ash"
+time=2026-02-03T16:44:53.573+11:00 level=INFO msg="shutting down server" service=server
+time=2026-02-03T16:44:53.574+11:00 level=INFO msg="server done" service=server

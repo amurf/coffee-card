@@ -1,0 +1,98 @@
+Destroying (ash):
+
+@ destroying....
+ -  aws:apigatewayv2:Route ApiRouteTfxhwzRoute deleting (0s) 
+ -  aws:apigatewayv2:Route ApiRouteCzvzxbRoute deleting (0s) 
+ -  aws:apigatewayv2:Route ApiRouteScronvRoute deleting (0s) 
+ -  aws:apigatewayv2:Route ApiRouteBahdrnRoute deleting (0s) 
+ -  aws:apigatewayv2:Route ApiRouteBahdrnRoute deleted (0.25s) 
+ -  aws:apigatewayv2:Route ApiRouteScronvRoute deleted (0.25s) 
+ -  aws:apigatewayv2:Route ApiRouteCzvzxbRoute deleted (0.25s) 
+ -  aws:apigatewayv2:Route ApiRouteTfxhwzRoute deleted (0.27s) 
+ -  aws:apigatewayv2:Integration ApiRouteCzvzxbIntegration deleting (0s) 
+ -  aws:apigatewayv2:Integration ApiRouteScronvIntegration deleting (0s) 
+ -  aws:apigatewayv2:Integration ApiRouteTfxhwzIntegration deleting (0s) 
+ -  aws:apigatewayv2:Integration ApiRouteBahdrnIntegration deleting (0s) 
+ -  aws:apigatewayv2:Integration ApiRouteCzvzxbIntegration deleted (0.11s) 
+ -  aws:apigatewayv2:Integration ApiRouteBahdrnIntegration deleted (0.13s) 
+ -  aws:apigatewayv2:Integration ApiRouteTfxhwzIntegration deleted (0.13s) 
+ -  aws:apigatewayv2:Integration ApiRouteScronvIntegration deleted (0.14s) 
+ -  aws:lambda:Permission ApiRouteScronvPermissions deleting (0s) 
+ -  aws:lambda:Permission ApiRouteBahdrnPermissions deleting (0s) 
+ -  aws:lambda:Permission ApiRouteCzvzxbPermissions deleting (0s) 
+ -  aws:lambda:Permission ApiRouteTfxhwzPermissions deleting (0s) 
+ -  aws:lambda:Permission ApiRouteScronvPermissions deleted (0.15s) 
+ -  aws:lambda:Permission ApiRouteCzvzxbPermissions deleted (0.16s) 
+ -  aws:lambda:Permission ApiRouteBahdrnPermissions deleted (0.16s) 
+ -  aws:lambda:Permission ApiRouteTfxhwzPermissions deleted (0.17s) 
+ -  aws:lambda:Function ApiRouteCzvzxbHandlerFunction deleting (0s) 
+ -  aws:lambda:Function ApiRouteScronvHandlerFunction deleting (0s) 
+ -  aws:lambda:Function ApiRouteTfxhwzHandlerFunction deleting (0s) 
+ -  aws:lambda:Function ApiRouteBahdrnHandlerFunction deleting (0s) 
+ -  aws:lambda:Function ApiRouteCzvzxbHandlerFunction deleted (0.22s) 
+ -  aws:lambda:Function ApiRouteBahdrnHandlerFunction deleted (0.24s) 
+ -  aws:lambda:Function ApiRouteScronvHandlerFunction deleted (0.24s) 
+ -  aws:lambda:Function ApiRouteTfxhwzHandlerFunction deleted (0.24s) 
+ -  aws:cloudwatch:LogGroup ApiRouteTfxhwzHandlerLogGroup deleting (0s) 
+ -  aws:s3:BucketObjectv2 ApiRouteTfxhwzHandlerCode deleting (0s) 
+ -  aws:s3:BucketObjectv2 ApiRouteScronvHandlerCode deleting (0s) 
+ -  aws:s3:BucketObjectv2 ApiRouteCzvzxbHandlerCode deleting (0s) 
+ -  aws:cloudwatch:LogGroup ApiRouteBahdrnHandlerLogGroup deleting (0s) 
+ -  aws:cloudwatch:LogGroup ApiRouteCzvzxbHandlerLogGroup deleting (0s) 
+ -  aws:iam:Role ApiRouteBahdrnHandlerRole deleting (0s) 
+ -  aws:cloudwatch:LogGroup ApiRouteScronvHandlerLogGroup deleting (0s) 
+ -  aws:iam:Role ApiRouteScronvHandlerRole deleting (0s) 
+ -  aws:iam:Role ApiRouteCzvzxbHandlerRole deleting (0s) 
+ -  aws:s3:BucketObjectv2 ApiRouteBahdrnHandlerCode deleting (0s) 
+ -  aws:iam:Role ApiRouteTfxhwzHandlerRole deleting (0s) 
+@ destroying....
+ -  aws:s3:BucketObjectv2 ApiRouteTfxhwzHandlerCode deleted (0.13s) 
+ -  aws:s3:BucketObjectv2 ApiRouteCzvzxbHandlerCode deleted (0.13s) 
+ -  aws:s3:BucketObjectv2 ApiRouteScronvHandlerCode deleted (0.13s) 
+ -  aws:s3:BucketObjectv2 ApiRouteBahdrnHandlerCode deleted (0.15s) 
+ -  aws:cloudwatch:LogGroup ApiRouteTfxhwzHandlerLogGroup deleted (0.16s) 
+ -  aws:cloudwatch:LogGroup ApiRouteBahdrnHandlerLogGroup deleted (0.16s) 
+ -  aws:cloudwatch:LogGroup ApiRouteCzvzxbHandlerLogGroup deleted (0.18s) 
+ -  aws:cloudwatch:LogGroup ApiRouteScronvHandlerLogGroup deleted (0.21s) 
+@ destroying.....
+ -  aws:iam:Role ApiRouteBahdrnHandlerRole deleted (2s) 
+ -  aws:iam:Role ApiRouteCzvzxbHandlerRole deleted (2s) 
+ -  aws:iam:Role ApiRouteTfxhwzHandlerRole deleted (2s) 
+ -  aws:iam:Role ApiRouteScronvHandlerRole deleted (2s) 
+ -  sst:aws:Function ApiRouteCzvzxbHandler deleting (0s) 
+ -  sst:aws:Function ApiRouteBahdrnHandler deleting (0s) 
+ -  sst:aws:Function ApiRouteScronvHandler deleting (0s) 
+ -  sst:aws:Function ApiRouteTfxhwzHandler deleting (0s) 
+ -  sst:sst:LinkRef ApiLinkRef deleting (0s) 
+ -  sst:sst:LinkRef CoffeeCardDataLinkRef deleting (0s) 
+ -  sst:aws:ApiGatewayV2LambdaRoute ApiRouteCzvzxb deleting (0s) 
+ -  sst:aws:ApiGatewayV2LambdaRoute ApiRouteScronv deleting (0s) 
+ -  sst:aws:ApiGatewayV2LambdaRoute ApiRouteTfxhwz deleting (0s) 
+ -  sst:aws:ApiGatewayV2LambdaRoute ApiRouteBahdrn deleting (0s) 
+ -  aws:apigatewayv2:Stage ApiStage deleting (0s) 
+ -  aws:apigatewayv2:Stage ApiStage deleted (0.34s) 
+ -  aws:cloudwatch:LogGroup ApiAccessLog deleting (0s) 
+ -  aws:apigatewayv2:Api ApiApi deleting (0s) 
+ -  aws:dynamodb:Table CoffeeCardDataTable deleting (0s) 
+@ destroying....
+ -  aws:cloudwatch:LogGroup ApiAccessLog deleted (0.09s) 
+ -  aws:apigatewayv2:Api ApiApi deleted (1s) 
+@ destroying...............
+ -  aws:dynamodb:Table CoffeeCardDataTable deleted (12s) 
+ -  sst:aws:ApiGatewayV2 Api deleting (0s) 
+ -  sst:aws:Dynamo CoffeeCardData deleting (0s) 
+ -  random:index:RandomBytes LambdaEncryptionKey deleting (0s) 
+ -  random:index:RandomBytes LambdaEncryptionKey deleted (0.01s) 
+ -  pulumi:pulumi:Stack coffee-card-ash deleting (0s) 
+ -  pulumi:pulumi:Stack coffee-card-ash deleted (0.00s) 
+Outputs:
+  - ApiEndpoint: "https://uffsuy2pv2.execute-api.ap-southeast-2.amazonaws.com"
+  - _protect   : false
+
+Resources:
+    - 46 deleted
+
+Duration: 18s
+
+The resources in the stack have been deleted, but the history and configuration associated with the stack are still maintained. 
+If you want to remove the stack completely, run `pulumi stack rm ash`.

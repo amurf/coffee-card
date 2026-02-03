@@ -15,7 +15,7 @@ A privacy-focused, zero-account digital loyalty card system for coffee shops.
 - **Data Model**:
   - `Store`: Profile and settings.
   - `Card`: Linked to a Store, holds `coffeeCount` and `coffeesEarned`.
-- **Infrastructure**: Serverless (likely SAM or CDK, deployed via Terraform or generic scripts).
+- **Infrastructure**: Serverless (SST v3).
 
 ### 2. Web Frontend (`packages/web-frontend`)
 - **Stack**: Vue 3, Vite, Tailwind CSS v4.

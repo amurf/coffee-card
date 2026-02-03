@@ -1,0 +1,7 @@
+time=2026-02-03T16:35:21.633+11:00 level=INFO msg="checking for pulumi" path="/Users/ash/Library/Application Support/sst/bin/pulumi"
+time=2026-02-03T16:35:22.299+11:00 level=INFO msg="checking for bun" path="/Users/ash/Library/Application Support/sst/bin/bun"
+time=2026-02-03T16:35:22.307+11:00 level=INFO msg="initializing ui" isTTY=true
+time=2026-02-03T16:35:22.307+11:00 level=INFO msg="initialized ui"
+time=2026-02-03T16:43:42.089+11:00 level=INFO msg=interrupted
+"initialized ui"
+time=2026-02-03T16:43:42.089+11:00 level=INFO msg=interrupted
