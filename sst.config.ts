@@ -60,6 +60,7 @@ export default $config({
 
         // Shopify POS App (Needs Table Name for local DB calls, and API URL)
         fs.writeFileSync("shopify-pos-app/.env", `TABLE_NAME=${tableName}\nVITE_API_URL=${url}\n`);
+        fs.writeFileSync("shopify-pos-app/extensions/redeem-coffee/.env", `VITE_API_URL=${url}\n`);
       });
     });
 

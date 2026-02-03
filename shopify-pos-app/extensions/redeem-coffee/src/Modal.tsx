@@ -13,9 +13,15 @@ import {
 
 // Proof of concept to ensure it can call the API and get a response
 // Will create an API client in the shared package so we aren't duplicating this in FE + POS
-import type { LoyaltyCard } from "@coffee-card/shared"
-import { getCardById } from "@coffee-card/shared"
+import type { LoyaltyCardDto } from "@coffee-card/shared"
+import { getCardById, configureApi } from "@coffee-card/shared"
 import { Card } from "@shopify/polaris"
+
+if (import.meta.env.VITE_API_URL) {
+  configureApi(import.meta.env.VITE_API_URL)
+} else {
+  console.error("VITE_API_URL is not defined")
+}
 
 const Loading = ({
   loading,
@@ -31,7 +37,7 @@ const CardNotFound = () => {
   return <Text>Error loading card</Text>
 }
 
-const CardDetails = ({ card }: { card: LoyaltyCard | null }) => {
+const CardDetails = ({ card }: { card: LoyaltyCardDto | null }) => {
   if (!card) {
     return <CardNotFound />
   }
@@ -59,7 +65,7 @@ const Scanner = ({ onScan }: { onScan: (scannedData: string) => void }) => {
 
 const Modal = () => {
   const [cardId, setCardId] = useState<string | null>(null)
-  const [card, setCard] = useState<LoyaltyCard | null>(null)
+  const [card, setCard] = useState<LoyaltyCardDto | null>(null)
   const [loading, setLoading] = useState(false)
 
   // const cardId = "2fa5fe9b-14b6-43d2-9d42-10d91e2592f0"
