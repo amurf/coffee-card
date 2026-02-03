@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/vue-query"
 import { createCard } from "@coffee-card/shared"
 import { useRoute, useRouter } from "vue-router"
 import { onMounted, ref } from "vue"
-// TODO: sort out how to get api url into app
+
 const route = useRoute()
 const router = useRouter()
 

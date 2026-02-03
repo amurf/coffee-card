@@ -1,5 +1,5 @@
 import z from "zod"
-import { StoreProfileModel } from "../model"
+import type { StoreProfileModel } from "../model"
 
 const StoreProfileSchema = z.object({
   storeId: z.string(),

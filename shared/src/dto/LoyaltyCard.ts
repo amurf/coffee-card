@@ -1,5 +1,5 @@
 import z from "zod"
-import { LoyaltyCardModel } from "../model"
+import type { LoyaltyCardModel } from "../model"
 
 export const GetLoyaltyCardSchema = z.object({
   cardId: z.string(),

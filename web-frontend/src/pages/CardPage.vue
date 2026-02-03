@@ -7,10 +7,9 @@ import { redeemPurchase, getCardById } from "@coffee-card/shared"
 import { useRoute } from "vue-router"
 import CardDescription from "@/components/ui/card/CardDescription.vue"
 
-// TODO: move this to BE and remove from FE eventually
 import QRCode from "qrcode"
 import { onMounted, useTemplateRef } from "vue"
-// TODO: sort out how to get api url into app
+
 const route = useRoute()
 const cardId = route.params.cardId
 
@@ -74,7 +73,7 @@ const { mutate: redeem } = useMutation({
         </div>
       </CardContent>
       <CardFooter class="gap-1">
-        <!-- TODO: redeem is probably need the right word here. -->
+        <!-- Redeem is the action of using a free coffee -->
         <Button @click="() => redeem()">Redeem</Button>
         <Button v-if="data.coffeesEarned" @click="() => console.log('Claim via QR code?')">
           FREE COFFEE!
