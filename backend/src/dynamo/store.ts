@@ -6,6 +6,7 @@ import { TABLE_NAME, docClient } from "."
 export async function createStore(
   storeName: string,
 ): Promise<StoreProfileModel> {
+  // coffeecarddev.myshopify.com
   const storeId = crypto.randomUUID()
   const storeProfile: StoreProfileModel = {
     PK: storeNameToPK(storeName),

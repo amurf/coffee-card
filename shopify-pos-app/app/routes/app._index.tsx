@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
+import { useEffect } from "react"
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
+import { useFetcher, useLoaderData } from "@remix-run/react"
 import {
   Page,
   Layout,
@@ -12,21 +12,49 @@ import {
   List,
   Link,
   InlineStack,
-} from "@shopify/polaris";
-import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
-import { authenticate } from "../shopify.server";
+  TextField,
+} from "@shopify/polaris"
+import { TitleBar, useAppBridge } from "@shopify/app-bridge-react"
+import { authenticate } from "../shopify.server"
+
+import { getStoreByName, getStoreCards } from "@coffee-card/backend"
+import {
+  LoyaltyCardDto,
+  StoreProfileDto,
+  toLoyaltyCardDto,
+  toStoreProfileDto,
+} from "@coffee-card/shared"
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
+  const { session } = await authenticate.admin(request)
 
-  return null;
-};
+  const shop = session.shop.split(".")[0]
+
+  console.log(shop)
+  const shopDetails = await getStoreByName(shop)
+  const cards = await getStoreCards(shop)
+
+  if (!shopDetails) {
+    throw new Response("Not found", { status: 404 })
+  }
+
+  const response = {
+    shop: toStoreProfileDto(shopDetails),
+    cards: [] as LoyaltyCardDto[],
+  }
+
+  if (cards) {
+    response.cards = cards.map((card) => toLoyaltyCardDto(card))
+  }
+
+  return response
+}
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { admin } = await authenticate.admin(request);
+  const { admin } = await authenticate.admin(request)
   const color = ["Red", "Orange", "Yellow", "Green"][
     Math.floor(Math.random() * 4)
-  ];
+  ]
   const response = await admin.graphql(
     `#graphql
       mutation populateProduct($product: ProductCreateInput!) {
@@ -56,11 +84,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         },
       },
     },
-  );
-  const responseJson = await response.json();
+  )
+  const responseJson = await response.json()
 
-  const product = responseJson.data!.productCreate!.product!;
-  const variantId = product.variants.edges[0]!.node!.id!;
+  const product = responseJson.data!.productCreate!.product!
+  const variantId = product.variants.edges[0]!.node!.id!
 
   const variantResponse = await admin.graphql(
     `#graphql
@@ -80,35 +108,94 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         variants: [{ id: variantId, price: "100.00" }],
       },
     },
-  );
+  )
 
-  const variantResponseJson = await variantResponse.json();
+  const variantResponseJson = await variantResponse.json()
 
   return {
     product: responseJson!.data!.productCreate!.product,
     variant:
       variantResponseJson!.data!.productVariantsBulkUpdate!.productVariants,
-  };
-};
+  }
+}
+
+function EditStoreNameForm({ store }: { store: StoreProfileDto }) {
+  return (
+    <BlockStack gap="200">
+      <Text as="h2" variant="headingMd">
+        Edit store name
+      </Text>
+      <form method="post">
+        <BlockStack gap="200">
+          <TextField
+            label="Store name"
+            value={store.storeName}
+            type="text"
+            name="storeName"
+            autoComplete="off"
+          />
+          <Button submit>Update name</Button>
+        </BlockStack>
+      </form>
+    </BlockStack>
+  )
+}
+
+// Edit form component for editing store name
+function StoreDetails({ store }: { store: StoreProfileDto }) {
+  return (
+    <BlockStack gap="200">
+      <EditStoreNameForm store={store} />
+      <InlineStack gap="200" align="space-between">
+        <Text as="span" variant="bodyMd">
+          Location
+        </Text>
+        <Text as="span" variant="bodyMd">
+          {store.location}
+        </Text>
+      </InlineStack>
+    </BlockStack>
+  )
+}
+
+function Cards({ cards }: { cards: LoyaltyCardDto[] }) {
+  return (
+    <BlockStack gap="500">
+      {cards.map((card) => (
+        <Card key={card.cardId}>
+          <BlockStack gap="200">
+            <Text as="h2" variant="headingMd">
+              {card.cardId}
+            </Text>
+            <Text variant="bodyMd" as="p">
+              {card.issueDate}
+            </Text>
+          </BlockStack>
+        </Card>
+      ))}
+    </BlockStack>
+  )
+}
 
 export default function Index() {
-  const fetcher = useFetcher<typeof action>();
+  const fetcher = useFetcher<typeof action>()
+  const { shop, cards } = useLoaderData<typeof loader>()
 
-  const shopify = useAppBridge();
+  const shopify = useAppBridge()
   const isLoading =
     ["loading", "submitting"].includes(fetcher.state) &&
-    fetcher.formMethod === "POST";
+    fetcher.formMethod === "POST"
   const productId = fetcher.data?.product?.id.replace(
     "gid://shopify/Product/",
     "",
-  );
+  )
 
   useEffect(() => {
     if (productId) {
-      shopify.toast.show("Product created");
+      shopify.toast.show("Product created")
     }
-  }, [productId, shopify]);
-  const generateProduct = () => fetcher.submit({}, { method: "POST" });
+  }, [productId, shopify])
+  const generateProduct = () => fetcher.submit({}, { method: "POST" })
 
   return (
     <Page>
@@ -120,11 +207,31 @@ export default function Index() {
       <BlockStack gap="500">
         <Layout>
           <Layout.Section>
+            <BlockStack gap="500">
+              <Card>
+                <BlockStack gap="200">
+                  <Text as="h2" variant="headingMd">
+                    Store details
+                  </Text>
+                  <StoreDetails store={shop} />
+                </BlockStack>
+              </Card>
+            </BlockStack>
+            <BlockStack gap="500">
+              <Card>
+                <BlockStack gap="200">
+                  <Text as="h2" variant="headingMd">
+                    Your loyalty cards
+                  </Text>
+                  <Cards cards={cards} />
+                </BlockStack>
+              </Card>
+            </BlockStack>
             <Card>
               <BlockStack gap="500">
                 <BlockStack gap="200">
                   <Text as="h2" variant="headingMd">
-                    Congrats on creating a new Shopify app 🎉
+                    Congrats on creating a new Shopify app 🎉 {shop?.storeName}
                   </Text>
                   <Text variant="bodyMd" as="p">
                     This embedded app template uses{" "}
@@ -330,5 +437,5 @@ export default function Index() {
         </Layout>
       </BlockStack>
     </Page>
-  );
+  )
 }
