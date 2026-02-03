@@ -1,1 +1,8 @@
 node_modules
+.sst
+.DS_Store
+dist
+.env
+.env.local
+*.zip
+sst-env.d.ts
