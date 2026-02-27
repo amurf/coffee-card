@@ -51,3 +51,6 @@ A privacy-focused, zero-account digital loyalty card system for coffee shops.
 - **Goal**: Premium, high-end "Coffee Shop" feel.
 - **Current State**: Strong technical foundation (Tailwind v4, OKLCH).
 - **Next Steps**: Refine typography, warm up the color palette, and add motion.
+
+## Development Workflow
+- **Code Quality**: Ensure `prettier` and `lint` are run after each change.
