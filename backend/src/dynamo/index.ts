@@ -11,3 +11,4 @@ export const TABLE_INDEXES = {
 
 export * from "./store"
 export * from "./card"
+export * from "./redemption"

@@ -9,12 +9,17 @@ import {
   reactExtension,
   useScannerDataSubscription,
   CameraScanner,
+  // @ts-ignore: Spec specifies to use this
+  useSessionToken,
+  // @ts-ignore: Spec specifies to use this
+  useCart,
+  Button
 } from "@shopify/ui-extensions-react/point-of-sale"
 
 // Proof of concept to ensure it can call the API and get a response
 // Will create an API client in the shared package so we aren't duplicating this in FE + POS
 import type { LoyaltyCardDto } from "@coffee-card/shared"
-import { getCardById, configureApi } from "@coffee-card/shared"
+import { getCardById, reserveRedemption, configureApi } from "@coffee-card/shared"
 import { Card } from "@shopify/polaris"
 
 if (import.meta.env.VITE_API_URL) {
@@ -67,20 +72,44 @@ const Modal = () => {
   const [cardId, setCardId] = useState<string | null>(null)
   const [card, setCard] = useState<LoyaltyCardDto | null>(null)
   const [loading, setLoading] = useState(false)
+  
+  const { getSessionToken } = useSessionToken()
+  const cart = useCart()
 
-  // const cardId = "2fa5fe9b-14b6-43d2-9d42-10d91e2592f0"
-
-  const onScan = (cardId: string) => {
-    setCardId(cardId)
+  const onScan = (scannedCardId: string) => {
+    setCardId(scannedCardId)
     setLoading(true)
 
-    getCardById(cardId)
+    getCardById(scannedCardId)
       .then((cardData) => setCard(cardData))
       .catch((error) => console.error("Error fetching card:", error))
       .finally(() => setLoading(false))
   }
 
-  // const card = await getCardById("2fa5fe9b-14b6-43d2-9d42-10d91e2592f0")
+  const handleRedeem = async () => {
+    if (!cardId) return
+    setLoading(true)
+    try {
+      const token = await getSessionToken();
+      // Assuming reserving 1 free coffee costs 10 stamps? 
+      // Wait, ReserveBodySchema takes `coffeeCount`. Let's assume we pass in 1 coffee to redeem.
+      const res = await reserveRedemption(cardId, 1, token)
+      
+      await cart.updateAttributes([
+        { key: "_custom_redemption_token", value: res.redemptionToken }
+      ])
+      
+      // Attempt generic discount apply logic if exists, or assume cashier applies it manually.
+      // Alternatively, we could push a discount if `cart.applyCartDiscount` API is available.
+      // For now, we trust the attribute is updated.
+      setCardId(null) // Reset flow
+    } catch (err) {
+      console.error("Failed to reserve coffee:", err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <Navigator>
       <Screen name="HelloWorld" title="Hello World!">
@@ -89,6 +118,7 @@ const Modal = () => {
             <Section title="Card Details">
               <Loading loading={loading}>
                 <CardDetails card={card} />
+                <Button title="Redeem Free Coffee" onPress={handleRedeem} />
               </Loading>
             </Section>
           )}

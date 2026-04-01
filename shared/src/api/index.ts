@@ -1,5 +1,5 @@
 import ky from "ky"
-import type { LoyaltyCardDto, StoreProfileDto } from "../dto"
+import type { LoyaltyCardDto, StoreProfileDto, ReserveResponseDto } from "../dto"
 
 let client: typeof ky | undefined
 
@@ -20,12 +20,24 @@ export const getCardById = async (cardId: string): Promise<LoyaltyCardDto> => {
   return await getApiClient().get(`cards/${cardId}`).json()
 }
 
-export const redeemPurchase = async (
+export const reserveRedemption = async (
   cardId: string,
   coffeeCount: number,
-): Promise<LoyaltyCardDto> => {
+  sessionToken?: string
+): Promise<ReserveResponseDto> => {
   return await getApiClient()
-    .post(`cards/${cardId}/redeem`, { searchParams: { coffeeCount } })
+    .post(`redemptions/reserve`, {
+      json: { cardId, coffeeCount },
+      ...(sessionToken ? { headers: { Authorization: `Bearer ${sessionToken}` } } : {})
+    })
+    .json()
+}
+
+export const commitRedemption = async (
+  redemptionToken: string,
+): Promise<void> => {
+  return await getApiClient()
+    .post(`redemptions/commit`, { json: { redemptionToken } })
     .json()
 }
 

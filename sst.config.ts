@@ -33,8 +33,13 @@ export default $config({
       ...routeConfig,
     });
 
-    api.route("POST /cards/{cardId}/redeem", {
-      handler: "backend/src/lambda/redeem/index.handler",
+    api.route("POST /redemptions/reserve", {
+      handler: "backend/src/lambda/reserve-redemption/index.handler",
+      ...routeConfig,
+    });
+
+    api.route("POST /redemptions/commit", {
+      handler: "backend/src/lambda/commit-redemption/index.handler",
       ...routeConfig,
     });
 

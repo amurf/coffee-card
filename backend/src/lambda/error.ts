@@ -14,8 +14,28 @@ export function validateParameters<TSchema extends ZodTypeAny>(
   return result.data
 }
 
+export function validateBody<TSchema extends ZodTypeAny>(
+  body: string | null,
+  schema: TSchema,
+): ZodInfer<TSchema> {
+  let parsed = {};
+  if (body) {
+    try {
+      parsed = JSON.parse(body);
+    } catch {
+      throw new ValidationError("Invalid JSON body", []);
+    }
+  }
+  const result = validateSchema(parsed, schema)
+  if (!result.valid) {
+    throw new ValidationError("Validation error", result.error)
+  }
+
+  return result.data
+}
+
 export const validateSchema = <T>(
-  parameters: APIGatewayProxyEventPathParameters | null,
+  parameters: unknown,
   schema: ZodType<T>,
 ): SchemaValidationResult<T> => {
   const result = schema.safeParse(parameters ?? {}) // fallback to empty object so zod gives a better error message
