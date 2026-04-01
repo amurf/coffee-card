@@ -2,8 +2,8 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
-import { useQuery, useQueryClient, useMutation } from "@tanstack/vue-query"
-import { redeemPurchase, getCardById, getStoreById } from "@coffee-card/shared"
+import { useQuery } from "@tanstack/vue-query"
+import { getCardById, getStoreById } from "@coffee-card/shared"
 import { useRoute } from "vue-router"
 import CardDescription from "@/components/ui/card/CardDescription.vue"
 
@@ -47,14 +47,6 @@ const { data: store, isLoading: isStoreLoading } = useQuery({
   enabled: !!card.value?.storeName,
 })
 
-// Redeem mutation
-const queryClient = useQueryClient() // Initialize query client
-const { mutate: redeem } = useMutation({
-  mutationFn: () => redeemPurchase(cardId as string, 5),
-  onSuccess: (newData) => {
-    queryClient.setQueryData(["card", cardId], newData)
-  },
-})
 </script>
 
 <template>
@@ -83,8 +75,6 @@ const { mutate: redeem } = useMutation({
         </div>
       </CardContent>
       <CardFooter class="gap-1">
-        <!-- Redeem is the action of using a free coffee -->
-        <Button @click="() => redeem()">Redeem</Button>
         <Button v-if="card.coffeesEarned" @click="() => console.log('Claim via QR code?')">
           FREE COFFEE!
         </Button>
