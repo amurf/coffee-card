@@ -36,16 +36,16 @@ The backend (DynamoDB schema and API Gateway lambdas) is strictly managed by **S
    ```
 
 2. **Wait for deployment to finish**: SST will provision the resources on AWS. 
-3. **Automatic Environment Variables**: Upon successful deployment, SST automatically generates `.env` files across the workspace (`web-frontend/.env`, `backend/.env`, and `shopify-pos-app/.env`) injected with your new AWS API URLs and DynamoDB table names.
+3. **Automatic Environment Variables**: Upon successful deployment, SST automatically generates `.env` files across the workspace (`web-frontend/.env`, `backend/.env`, and `shopify-app/.env`) injected with your new AWS API URLs and DynamoDB table names.
 
 ## 4. Deploying the Shopify POS App
 
 The Shopify app and its extensions rely on the backend API URL provided by the SST deployment.
 
-1. Navigate to the `shopify-pos-app` directory:
+1. Navigate to the `shopify-app` directory:
 
    ```bash
-   cd shopify-pos-app
+   cd shopify-app
    ```
 
 2. Run the Shopify deploy command:

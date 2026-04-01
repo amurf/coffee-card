@@ -5,6 +5,14 @@ const StoreProfileSchema = z.object({
   storeId: z.string(),
   storeName: z.string(),
   location: z.string(),
+  themeOptions: z.object({
+    primaryColor: z.string(),
+    secondaryColor: z.string(),
+    logoUrl: z.string().optional(),
+  }).optional(),
+  rewardRules: z.object({
+    stampsRequired: z.number(),
+  }).optional(),
 })
 
 export type StoreProfileDto = z.infer<typeof StoreProfileSchema>
@@ -16,6 +24,8 @@ export const toStoreProfileDto = (
     storeId: model.storeId,
     storeName: model.storeName,
     location: model.location,
+    themeOptions: model.themeOptions,
+    rewardRules: model.rewardRules,
   }
 }
 

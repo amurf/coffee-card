@@ -20,6 +20,12 @@ export async function createStore(
   return await insertData(storeProfile)
 }
 
+export async function updateStoreProfile(
+  storeProfile: StoreProfileModel,
+): Promise<StoreProfileModel> {
+  return await insertData(storeProfile)
+}
+
 export const createNewCardForStore = async (
   storeName: string,
 ): Promise<LoyaltyCardModel> => {

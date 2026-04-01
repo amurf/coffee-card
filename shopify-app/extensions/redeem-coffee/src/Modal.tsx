@@ -9,10 +9,7 @@ import {
   reactExtension,
   useScannerDataSubscription,
   CameraScanner,
-  // @ts-ignore: Spec specifies to use this
-  useSessionToken,
-  // @ts-ignore: Spec specifies to use this
-  useCart,
+  useApi,
   Button
 } from "@shopify/ui-extensions-react/point-of-sale"
 
@@ -73,8 +70,9 @@ const Modal = () => {
   const [card, setCard] = useState<LoyaltyCardDto | null>(null)
   const [loading, setLoading] = useState(false)
   
-  const { getSessionToken } = useSessionToken()
-  const cart = useCart()
+  const api = useApi()
+  const getSessionToken = api.session.getSessionToken
+  const cart = api.cart
 
   const onScan = (scannedCardId: string) => {
     setCardId(scannedCardId)
@@ -95,9 +93,9 @@ const Modal = () => {
       // Wait, ReserveBodySchema takes `coffeeCount`. Let's assume we pass in 1 coffee to redeem.
       const res = await reserveRedemption(cardId, 1, token)
       
-      await cart.updateAttributes([
-        { key: "_custom_redemption_token", value: res.redemptionToken }
-      ])
+      await cart.addCartProperties({
+        _custom_redemption_token: res.redemptionToken
+      })
       
       // Attempt generic discount apply logic if exists, or assume cashier applies it manually.
       // Alternatively, we could push a discount if `cart.applyCartDiscount` API is available.

@@ -168,6 +168,21 @@ export default function Index() {
                   <StoreDetailsCard store={shop} shopifyDetails={shopifyDetails} />
                 </BlockStack>
             </BlockStack>
+            
+            <BlockStack gap="500">
+              <BlockStack gap="200">
+                <Text as="h2" variant="headingMd">
+                  Configuration
+                </Text>
+                <Card>
+                  <InlineStack gap="200">
+                    <Button onClick={() => navigate("/app/customise")}>Theme Settings</Button>
+                    <Button onClick={() => navigate("/app/rewards")}>Loyalty Rewards</Button>
+                  </InlineStack>
+                </Card>
+              </BlockStack>
+            </BlockStack>
+
             <BlockStack gap="500">
               <Card>
                 <BlockStack gap="200">

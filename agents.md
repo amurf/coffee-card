@@ -29,7 +29,7 @@ A privacy-focused, zero-account digital loyalty card system for coffee shops.
   - **OKLCH Colors**: Modern, vibrant color palettes.
   - **Dark Mode**: Native support.
 
-### 3. Shopify POS App (`packages/shopify-pos-app`)
+### 3. Shopify App (`shopify-app`)
 - **Stack**: Remix, Shopify App Bridge, Polaris.
 - **Role**: Merchant-facing dashboard embedded in Shopify Admin/POS.
 - **Features**:

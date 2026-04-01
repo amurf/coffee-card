@@ -1,5 +1,5 @@
 {
-  "name": "pos-app",
+  "name": "shopify-app",
   "private": true,
   "scripts": {
     "build": "remix vite:build",

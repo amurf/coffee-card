@@ -1,8 +1,8 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "7c8a462621f58682b434c3b3da61c035"
-name = "pos-app"
-handle = "pos-app-59"
+name = "coffee-card-merchant"
+handle = "coffee-card-merchant-59"
 application_url = "https://neil-cleveland-shade-hardwood.trycloudflare.com"
 embedded = true
 

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { useQuery, useQueryClient, useMutation } from "@tanstack/vue-query"
-import { redeemPurchase, getCardById } from "@coffee-card/shared"
+import { redeemPurchase, getCardById, getStoreById } from "@coffee-card/shared"
 import { useRoute } from "vue-router"
 import CardDescription from "@/components/ui/card/CardDescription.vue"
 
@@ -36,9 +36,15 @@ onMounted(() => {
   console.log("Generated!")
 })
 
-const { data, error, isLoading } = useQuery({
-  queryKey: ["data"],
+const { data: card, error, isLoading } = useQuery({
+  queryKey: ["card", cardId],
   queryFn: () => getCardById(cardId as string),
+})
+
+const { data: store, isLoading: isStoreLoading } = useQuery({
+  queryKey: ["store", card.value?.storeName],
+  queryFn: () => getStoreById(card.value!.storeName),
+  enabled: !!card.value?.storeName,
 })
 
 // Redeem mutation
@@ -46,19 +52,20 @@ const queryClient = useQueryClient() // Initialize query client
 const { mutate: redeem } = useMutation({
   mutationFn: () => redeemPurchase(cardId as string, 5),
   onSuccess: (newData) => {
-    queryClient.setQueryData(["data"], newData)
+    queryClient.setQueryData(["card", cardId], newData)
   },
 })
 </script>
 
 <template>
   <main class="m-2">
-    <Card v-if="data">
+    <Card v-if="card" :style="{ backgroundColor: store?.themeOptions?.primaryColor, color: store?.themeOptions?.secondaryColor }">
       <CardHeader>
-        <CardTitle>
-          {{ data.storeName }}
+        <CardTitle class="flex items-center justify-between">
+          <span>{{ card.storeName }}</span>
+          <img v-if="store?.themeOptions?.logoUrl" :src="store.themeOptions.logoUrl" alt="Store Logo" class="h-8 w-auto object-contain" />
         </CardTitle>
-        <CardDescription>
+        <CardDescription :style="{ color: store?.themeOptions?.secondaryColor, opacity: 0.9 }">
           <!-- It's probably worth adding a city at the very least for the store -->
           Tokyo
         </CardDescription>
@@ -66,9 +73,9 @@ const { mutate: redeem } = useMutation({
       <CardContent>
         <div class="flex align-middle justify-between">
           <ul>
-            <li>Count: {{ data.coffeeCount }}</li>
-            <li>Freebies: {{ data.coffeesEarned }}</li>
-            <li>Redeemed: {{ data.coffeesRedeemed }}</li>
+            <li>Count: {{ card.coffeeCount }} / {{ store?.rewardRules?.stampsRequired || 10 }}</li>
+            <li>Freebies: {{ card.coffeesEarned }}</li>
+            <li>Redeemed: {{ card.coffeesRedeemed }}</li>
           </ul>
           <div>
             <canvas ref="canvas" id="canvas"></canvas>
@@ -78,7 +85,7 @@ const { mutate: redeem } = useMutation({
       <CardFooter class="gap-1">
         <!-- Redeem is the action of using a free coffee -->
         <Button @click="() => redeem()">Redeem</Button>
-        <Button v-if="data.coffeesEarned" @click="() => console.log('Claim via QR code?')">
+        <Button v-if="card.coffeesEarned" @click="() => console.log('Claim via QR code?')">
           FREE COFFEE!
         </Button>
       </CardFooter>
