@@ -42,9 +42,9 @@ const { data: card, error, isLoading } = useQuery({
 })
 
 const { data: store, isLoading: isStoreLoading } = useQuery({
-  queryKey: ["store", card.value?.storeName],
+  queryKey: computed(() => ["store", card.value?.storeName]),
   queryFn: () => getStoreById(card.value!.storeName),
-  enabled: !!card.value?.storeName,
+  enabled: computed(() => !!card.value?.storeName),
 })
 
 const maxStamps = computed(() => {
