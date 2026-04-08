@@ -13,7 +13,7 @@ async function main() {
     },
     queryStringParameters: {
       parameter1: "value1,value2",
-      coffeeCount: "1",
+      stampCount: "1",
     },
     requestContext: {
       accountId: "123456789012",

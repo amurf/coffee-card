@@ -90,8 +90,8 @@ const Modal = () => {
     try {
       const token = await getSessionToken();
       // Assuming reserving 1 free coffee costs 10 stamps? 
-      // Wait, ReserveBodySchema takes `coffeeCount`. Let's assume we pass in 1 coffee to redeem.
-      const res = await reserveRedemption(cardId, 1, token)
+      // Assuming reserving 1 free item is standard for now, hardcode "m1"
+      const res = await reserveRedemption(cardId, "m1", token)
       
       await cart.addCartProperties({
         _custom_redemption_token: res.redemptionToken
@@ -116,7 +116,7 @@ const Modal = () => {
             <Section title="Card Details">
               <Loading loading={loading}>
                 <CardDetails card={card} />
-                <Button title="Redeem Free Coffee" onPress={handleRedeem} />
+                <Button title="Redeem Reward" onPress={handleRedeem} />
               </Loading>
             </Section>
           )}

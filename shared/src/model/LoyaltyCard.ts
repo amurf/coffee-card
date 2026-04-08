@@ -7,9 +7,8 @@ export const LoyaltyCardSchema = z.object({
   cardId: z.string(),
   storeName: z.string(),
   issueDate: z.string(),
-  coffeeCount: z.number(),
-  coffeesEarned: z.number(),
-  coffeesRedeemed: z.number(),
+  stampCount: z.number(),
+  totalStampsEarned: z.number(),
   redeemedMilestones: z.array(z.string()).optional(),
 })
 

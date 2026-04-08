@@ -227,7 +227,7 @@ export default function Index() {
             <Layout.Section>
               <Banner title="Welcome to Coffee Card!" tone="success">
                 <Text as="p">
-                  Please update your program's display name below and print out your QR code so customers can begin redeeming their coffees.
+                  Please update your program's display name below and print out your QR code so customers can begin redeeming their rewards.
                 </Text>
               </Banner>
             </Layout.Section>

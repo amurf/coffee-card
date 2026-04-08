@@ -106,7 +106,7 @@ const earningText = computed(() => {
                   :class="[
                     isMilestoneRedeemed(getMilestone(slotNum)!.id)
                       ? 'bg-slate-200 border-slate-300 opacity-60'
-                      : slotNum <= card.coffeeCount 
+                      : slotNum <= card.stampCount 
                         ? 'bg-blue-100 border-blue-600 text-blue-600 shadow-sm' 
                         : 'bg-white border-dashed border-slate-300'
                   ]"
@@ -116,11 +116,11 @@ const earningText = computed(() => {
                 
                 <div v-else class="h-[52px] w-[52px] rounded-full flex items-center justify-center text-2xl transition-all border"
                   :class="[
-                    slotNum <= card.coffeeCount 
+                    slotNum <= card.stampCount 
                       ? 'bg-blue-500 border-blue-600 text-white shadow-sm' 
                       : 'bg-slate-100 border-dashed border-slate-300'
                   ]">
-                  <span v-if="slotNum <= card.coffeeCount">✓</span>
+                  <span v-if="slotNum <= card.stampCount">✓</span>
                 </div>
 
                 <div v-if="getMilestone(slotNum)" class="absolute bottom-full mb-3 bg-slate-800 text-white text-xs px-3 py-2 rounded-lg w-max max-w-[180px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 text-center shadow-xl pointer-events-none">

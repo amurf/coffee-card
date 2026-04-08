@@ -214,7 +214,7 @@ export default function ScanPage() {
                     </InlineStack>
                     <Text as="p" tone="subdued">ID: {card.cardId}</Text>
                     <div style={{ marginTop: "1rem" }}>
-                      <Text as="h1" variant="heading3xl">{card.coffeeCount} Stamps</Text>
+                      <Text as="h1" variant="heading3xl">{card.stampCount} Stamps</Text>
                     </div>
                   </BlockStack>
                 </Card>
@@ -251,7 +251,7 @@ export default function ScanPage() {
                       <BlockStack gap="300">
                         {sortedMilestones.map((milestone) => {
                           const isClaimed = card.redeemedMilestones?.includes(milestone.id);
-                          const isLocked = card.coffeeCount < milestone.stampsRequired;
+                          const isLocked = card.stampCount < milestone.stampsRequired;
 
                           return (
                             <div key={milestone.id}>

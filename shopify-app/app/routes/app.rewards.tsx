@@ -67,7 +67,7 @@ export default function Rewards() {
   const defaultRules = shopDetails.rewardRules || {
     earningRule: { type: "ITEM_PURCHASE" },
     milestones: [
-      { id: "m1", stampsRequired: 8, rewardType: "FREE_ITEM", description: "Free Coffee" }
+      { id: "m1", stampsRequired: 8, rewardType: "FREE_ITEM", description: "Free Item" }
     ]
   }
 

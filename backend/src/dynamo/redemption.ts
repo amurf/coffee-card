@@ -16,7 +16,7 @@ export const createPendingRedemption = async (
   const milestone = store.rewardRules.milestones.find((m) => m.id === milestoneId)
   if (!milestone) return null
 
-  if (card.coffeeCount < milestone.stampsRequired) return null
+  if (card.stampCount < milestone.stampsRequired) return null
   if (card.redeemedMilestones?.includes(milestoneId)) return null
 
   const token = randomUUID()

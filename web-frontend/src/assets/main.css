@@ -46,7 +46,7 @@
 }
 
 :root {
-  /* Warm Coffee Light Mode */
+  /* Warm Theme Light Mode */
   --background: oklch(0.985 0.01 85); /* Warm Cream */
   --foreground: oklch(0.25 0.04 40);  /* Dark Espresso */
   
@@ -94,7 +94,7 @@
 }
 
 .dark {
-  /* Warm Coffee Dark Mode */
+  /* Warm Theme Dark Mode */
   --background: oklch(0.18 0.03 40); /* Dark Roast Bean */
   --foreground: oklch(0.95 0.02 85); /* Steam/Foam */
   

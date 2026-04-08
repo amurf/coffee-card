@@ -25,18 +25,18 @@ export const getCardById = async (
 
 export const redeem = async (
   cardId: LoyaltyCardModel["cardId"],
-  coffeeCount: number,
+  stampCount: number,
 ): Promise<LoyaltyCardModel | null> => {
   const card = await getCardById(cardId)
   if (!card) {
     return null
   }
 
-  const newCoffeeCount = card.coffeeCount + coffeeCount
+  const newStampCount = card.stampCount + stampCount
 
   const updatedCard = {
     ...card,
-    coffeeCount: newCoffeeCount,
+    stampCount: newStampCount,
   }
 
   const command = new PutCommand({

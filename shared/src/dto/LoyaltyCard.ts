@@ -5,9 +5,8 @@ export const GetLoyaltyCardSchema = z.object({
   cardId: z.string(),
   storeName: z.string(),
   issueDate: z.string(),
-  coffeeCount: z.number(),
-  coffeesEarned: z.number(),
-  coffeesRedeemed: z.number(),
+  stampCount: z.number(),
+  totalStampsEarned: z.number(),
   redeemedMilestones: z.array(z.string()),
 })
 
@@ -18,9 +17,8 @@ export const toLoyaltyCardDto = (model: LoyaltyCardModel): LoyaltyCardDto => {
     cardId: model.cardId,
     storeName: model.storeName,
     issueDate: model.issueDate,
-    coffeeCount: model.coffeeCount,
-    coffeesEarned: model.coffeesEarned,
-    coffeesRedeemed: model.coffeesRedeemed,
+    stampCount: model.stampCount,
+    totalStampsEarned: model.totalStampsEarned,
     redeemedMilestones: model.redeemedMilestones ?? [],
   }
 }
@@ -38,7 +36,7 @@ export const RedeemParamsSchema = z.object({
 export type RedeemParams = z.infer<typeof RedeemParamsSchema>
 
 export const RedeemQueryParamsSchema = z.object({
-  coffeeCount: z
+  stampCount: z
     .string()
     .transform((val) => {
       const num = parseInt(val)

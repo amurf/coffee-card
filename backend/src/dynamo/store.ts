@@ -54,9 +54,8 @@ export const createNewCardForStore = async (
     cardId,
     storeName: store.storeName,
     issueDate: new Date().toISOString(),
-    coffeeCount: 0,
-    coffeesEarned: 0,
-    coffeesRedeemed: 0,
+    stampCount: 0,
+    totalStampsEarned: 0,
     redeemedMilestones: [],
   }
 
