@@ -15,6 +15,17 @@ export async function createStore(
     storeId,
     storeName,
     location: "",
+    rewardRules: {
+      earningRule: { type: "ITEM_PURCHASE" },
+      milestones: [
+        {
+          id: crypto.randomUUID(),
+          stampsRequired: 10,
+          rewardType: "FREE_ITEM",
+          description: "Free Coffee",
+        },
+      ],
+    },
   }
 
   return await insertData(storeProfile)
@@ -46,6 +57,7 @@ export const createNewCardForStore = async (
     coffeeCount: 0,
     coffeesEarned: 0,
     coffeesRedeemed: 0,
+    redeemedMilestones: [],
   }
 
   return await insertData(newCard)

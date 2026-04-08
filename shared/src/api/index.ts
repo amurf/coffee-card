@@ -22,12 +22,12 @@ export const getCardById = async (cardId: string): Promise<LoyaltyCardDto> => {
 
 export const reserveRedemption = async (
   cardId: string,
-  coffeeCount: number,
+  milestoneId: string,
   sessionToken?: string
 ): Promise<ReserveResponseDto> => {
   return await getApiClient()
     .post(`redemptions/reserve`, {
-      json: { cardId, coffeeCount },
+      json: { cardId, milestoneId },
       ...(sessionToken ? { headers: { Authorization: `Bearer ${sessionToken}` } } : {})
     })
     .json()
