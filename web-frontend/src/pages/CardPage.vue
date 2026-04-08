@@ -8,7 +8,7 @@ import { useRoute } from "vue-router"
 import CardDescription from "@/components/ui/card/CardDescription.vue"
 
 import QRCode from "qrcode"
-import { onMounted, useTemplateRef, computed } from "vue"
+import { onMounted, useTemplateRef, computed, watchEffect } from "vue"
 
 const route = useRoute()
 const cardId = route.params.cardId
@@ -28,12 +28,16 @@ async function generateQRCode() {
     console.error(error)
   }
 }
+watchEffect(() => {
+  if (canvasRef.value) {
+    generateQRCode()
+  }
+})
+
 onMounted(() => {
-  generateQRCode()
   if (cardId) {
     localStorage.setItem("last-viewed-card-id", cardId as string)
   }
-  console.log("Generated!")
 })
 
 const { data: card, error, isLoading } = useQuery({
