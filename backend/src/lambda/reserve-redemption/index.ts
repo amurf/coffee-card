@@ -32,10 +32,6 @@ export async function handler(
       })
     )
   } catch (error) {
-    // The existing error handler might wrap in 400 or 500
-    // If it's "Insufficient balance" we want a 400
-    // But handleErrors relies on ZodError or other structures. 
-    // We'll just let it format the error gracefully based on existing patterns.
     return lambdaResponseToAPIGatewayProxyResult(handleErrors(error))
   }
 }

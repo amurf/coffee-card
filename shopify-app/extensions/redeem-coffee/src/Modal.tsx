@@ -13,8 +13,6 @@ import {
   Button
 } from "@shopify/ui-extensions-react/point-of-sale"
 
-// Proof of concept to ensure it can call the API and get a response
-// Will create an API client in the shared package so we aren't duplicating this in FE + POS
 import type { LoyaltyCardDto } from "@coffee-card/shared"
 import { getCardById, reserveRedemption, configureApi } from "@coffee-card/shared"
 import { Card } from "@shopify/polaris"
@@ -89,17 +87,12 @@ const Modal = () => {
     setLoading(true)
     try {
       const token = await getSessionToken();
-      // Assuming reserving 1 free coffee costs 10 stamps? 
-      // Assuming reserving 1 free item is standard for now, hardcode "m1"
       const res = await reserveRedemption(cardId, "m1", token)
       
       await cart.addCartProperties({
         _custom_redemption_token: res.redemptionToken
       })
       
-      // Attempt generic discount apply logic if exists, or assume cashier applies it manually.
-      // Alternatively, we could push a discount if `cart.applyCartDiscount` API is available.
-      // For now, we trust the attribute is updated.
       setCardId(null) // Reset flow
     } catch (err) {
       console.error("Failed to reserve coffee:", err)

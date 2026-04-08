@@ -28,7 +28,6 @@ const QRCode = lazy(() => import("react-qr-code"))
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { session } = await authenticate.admin(request)
-// ... standard action ...
   const shop = session.shop.split(".")[0]
 
   const formData = await request.formData()
