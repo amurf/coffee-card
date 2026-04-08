@@ -1,34 +1,8 @@
 import z from "zod"
 import type { StoreProfileModel } from "../model"
+import { RewardRulesSchema } from "../model/StoreProfile"
 
-export const EarningTypeSchema = z.enum(["ITEM_PURCHASE", "SPEND_AMOUNT"])
-
-export const EarningRuleSchema = z.object({
-  type: EarningTypeSchema,
-  amountPerStamp: z.number().optional(),
-})
-
-export const RewardTypeSchema = z.enum([
-  "FIXED_DISCOUNT",
-  "PERCENTAGE_DISCOUNT",
-  "FREE_ITEM",
-  "CUSTOM",
-])
-
-export const MilestoneRewardSchema = z.object({
-  id: z.string(),
-  stampsRequired: z.number(),
-  rewardType: RewardTypeSchema,
-  value: z.number().optional(),
-  description: z.string(),
-})
-
-export const RewardRulesSchema = z.object({
-  earningRule: EarningRuleSchema,
-  milestones: z.array(MilestoneRewardSchema),
-})
-
-export const StoreProfileSchema = z.object({
+export const StoreProfileDtoSchema = z.object({
   storeId: z.string(),
   storeName: z.string(),
   location: z.string(),
@@ -40,7 +14,7 @@ export const StoreProfileSchema = z.object({
   rewardRules: RewardRulesSchema.optional(),
 })
 
-export type StoreProfileDto = z.infer<typeof StoreProfileSchema>
+export type StoreProfileDto = z.infer<typeof StoreProfileDtoSchema>
 
 export const toStoreProfileDto = (
   model: StoreProfileModel,

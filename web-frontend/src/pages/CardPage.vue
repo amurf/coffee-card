@@ -97,7 +97,7 @@ const isMilestoneRedeemed = (milestoneId: string) => {
                         : 'bg-white border-dashed border-slate-300'
                   ]"
                 >
-                  {{ slotNum === maxStamps.value ? '🏆' : '🎁' }}
+                  {{ slotNum === maxStamps ? '🏆' : '🎁' }}
                 </div>
                 
                 <div v-else class="h-[52px] w-[52px] rounded-full flex items-center justify-center text-2xl transition-all border"
