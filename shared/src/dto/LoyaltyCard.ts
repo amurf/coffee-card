@@ -8,6 +8,7 @@ export const GetLoyaltyCardSchema = z.object({
   coffeeCount: z.number(),
   coffeesEarned: z.number(),
   coffeesRedeemed: z.number(),
+  redeemedMilestones: z.array(z.string()),
 })
 
 export type LoyaltyCardDto = z.infer<typeof GetLoyaltyCardSchema>
@@ -20,6 +21,7 @@ export const toLoyaltyCardDto = (model: LoyaltyCardModel): LoyaltyCardDto => {
     coffeeCount: model.coffeeCount,
     coffeesEarned: model.coffeesEarned,
     coffeesRedeemed: model.coffeesRedeemed,
+    redeemedMilestones: model.redeemedMilestones ?? [],
   }
 }
 

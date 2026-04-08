@@ -1,15 +1,23 @@
 import { PendingRedemptionModel } from "@coffee-card/shared"
 import { GetCommand, PutCommand, TransactWriteCommand } from "@aws-sdk/lib-dynamodb"
-import { TABLE_NAME, docClient, getCardById } from "."
+import { TABLE_NAME, docClient, getCardById, getStoreByName } from "."
 import { randomUUID } from "node:crypto"
 
 export const createPendingRedemption = async (
   cardId: string,
-  coffeeCount: number
+  milestoneId: string
 ): Promise<PendingRedemptionModel | null> => {
   const card = await getCardById(cardId)
   if (!card) return null
-  if (card.coffeesEarned < coffeeCount) return null
+
+  const store = await getStoreByName(card.storeName)
+  if (!store || !store.rewardRules) return null
+
+  const milestone = store.rewardRules.milestones.find((m) => m.id === milestoneId)
+  if (!milestone) return null
+
+  if (card.coffeeCount < milestone.stampsRequired) return null
+  if (card.redeemedMilestones?.includes(milestoneId)) return null
 
   const token = randomUUID()
   const now = Math.floor(Date.now() / 1000)
@@ -21,7 +29,7 @@ export const createPendingRedemption = async (
     EntityType: "PendingRedemption",
     token,
     cardId,
-    coffeeCount,
+    milestoneId,
     expiresAt,
   }
 
@@ -52,12 +60,10 @@ export const commitRedemption = async (
 
   const card = await getCardById(pending.cardId)
   if (!card) return false
-  if (card.coffeesEarned < pending.coffeeCount) return false // Double check
 
   const updatedCard = {
     ...card,
-    coffeesEarned: card.coffeesEarned - pending.coffeeCount,
-    coffeesRedeemed: card.coffeesRedeemed + pending.coffeeCount,
+    redeemedMilestones: [...(card.redeemedMilestones || []), pending.milestoneId],
   }
 
   await docClient.send(

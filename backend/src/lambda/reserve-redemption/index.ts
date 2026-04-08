@@ -21,9 +21,9 @@ export async function handler(
 
     return lambdaResponseToAPIGatewayProxyResult(
       await promiseToLambdaResponse(async () => {
-        const pending = await createPendingRedemption(body.cardId, body.coffeeCount)
+        const pending = await createPendingRedemption(body.cardId, body.milestoneId)
         if (!pending) {
-          throw new Error("Insufficient balance or card not found")
+          throw new Error("Insufficient stamps, milestone already redeemed, or card not found")
         }
         return {
           redemptionToken: pending.token,

@@ -9,7 +9,7 @@ export type ReserveResponseDto = z.infer<typeof ReserveResponseSchema>
 
 export const ReserveBodySchema = z.object({
   cardId: z.string(),
-  coffeeCount: z.number().positive(),
+  milestoneId: z.string(),
 })
 
 export type ReserveBodyDto = z.infer<typeof ReserveBodySchema>

@@ -32,19 +32,11 @@ export const redeem = async (
     return null
   }
 
-  // TODO: this would really be configurable.
-  const FREE_COFFEE_THRESHOLD = 10
-
-  const newCoffeeCount =
-    (card.coffeeCount + coffeeCount) % FREE_COFFEE_THRESHOLD
-  const coffeesEarned =
-    Math.floor((card.coffeeCount + coffeeCount) / FREE_COFFEE_THRESHOLD) +
-    card.coffeesEarned
+  const newCoffeeCount = card.coffeeCount + coffeeCount
 
   const updatedCard = {
     ...card,
     coffeeCount: newCoffeeCount,
-    coffeesEarned,
   }
 
   const command = new PutCommand({

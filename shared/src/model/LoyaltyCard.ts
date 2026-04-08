@@ -10,6 +10,7 @@ export const LoyaltyCardSchema = z.object({
   coffeeCount: z.number(),
   coffeesEarned: z.number(),
   coffeesRedeemed: z.number(),
+  redeemedMilestones: z.array(z.string()).optional(),
 })
 
 export type LoyaltyCardModel = z.infer<typeof LoyaltyCardSchema>

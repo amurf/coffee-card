@@ -6,7 +6,7 @@ export const PendingRedemptionSchema = z.object({
   EntityType: z.literal("PendingRedemption"),
   token: z.string(),
   cardId: z.string(),
-  coffeeCount: z.number(),
+  milestoneId: z.string(),
   expiresAt: z.number(),
 })
 
