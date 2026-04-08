@@ -68,6 +68,16 @@ const isMilestoneRedeemed = (milestoneId: string) => {
   return card.value?.redeemedMilestones?.includes(milestoneId)
 }
 
+const earningText = computed(() => {
+  const rule = store.value?.rewardRules?.earningRule
+  if (!rule) return "Earn stamps with every purchase!"
+  
+  if (rule.type === "SPEND_AMOUNT") {
+    return `Earn 1 stamp for every $${rule.amountPerStamp || 1} spent`
+  }
+  return "Earn 1 stamp per item purchased"
+})
+
 </script>
 
 <template>
@@ -121,6 +131,7 @@ const isMilestoneRedeemed = (milestoneId: string) => {
 
               </div>
             </div>
+            <p class="text-xs text-slate-500 mt-6 text-center tracking-wide">{{ earningText }}</p>
           </div>
           
           <div class="mt-4 bg-white p-3 rounded-2xl shadow-sm border inline-block">
