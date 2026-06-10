@@ -8,6 +8,8 @@ export async function syncCardToSquare(
   store: StoreProfileModel,
   cardId: string,
 ): Promise<void> {
+  // TODO: In production, instead of using a manually configured Personal Access Token (PAT),
+  // this token should be obtained securely via OAuth 2.0 and auto-rotated using refresh tokens.
   const token = store.posConfig?.squareAccessToken
   if (!token) {
     console.warn(

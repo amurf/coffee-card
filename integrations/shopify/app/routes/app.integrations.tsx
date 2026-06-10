@@ -146,6 +146,12 @@ export default function IntegrationsPage() {
                         autoComplete="off"
                         helpText="Retrieve this from your Square Developer Console under Locations."
                       />
+                      {/* 
+                        TODO: For production distribution on the Square App Marketplace, 
+                        replace this manual Personal Access Token input with an OAuth 2.0 
+                        onboarding flow ("Connect with Square" button) to obtain and rotate 
+                        access/refresh tokens automatically.
+                      */}
                       <TextField
                         label="Square Personal Access Token"
                         value={squareAccessToken}
