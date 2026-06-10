@@ -7,7 +7,9 @@
     "dev": "sst dev",
     "down": "sst remove",
     "deploy": "sst deploy",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "mock:webhook:shopify": "tsx scripts/emit-webhook.ts",
+    "mock:webhook:square": "tsx scripts/emit-square-webhook.ts"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +20,7 @@
   },
   "devDependencies": {
     "prettier": "3.8.1",
-    "sst": "^3.17.38"
+    "sst": "^3.17.38",
+    "tsx": "^4.19.3"
   }
 }
