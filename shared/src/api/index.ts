@@ -1,5 +1,9 @@
 import ky from "ky"
-import type { LoyaltyCardDto, StoreProfileDto, ReserveResponseDto } from "../dto"
+import type {
+  LoyaltyCardDto,
+  StoreProfileDto,
+  ReserveResponseDto,
+} from "../dto"
 
 let client: typeof ky | undefined
 
@@ -11,7 +15,9 @@ export const configureApi = (url: string) => {
 
 const getApiClient = () => {
   if (!client) {
-    throw new Error("API client not configured. Please call configureApi first.")
+    throw new Error(
+      "API client not configured. Please call configureApi first.",
+    )
   }
   return client
 }
@@ -20,15 +26,23 @@ export const getCardById = async (cardId: string): Promise<LoyaltyCardDto> => {
   return await getApiClient().get(`cards/${cardId}`).json()
 }
 
+export const getCardQrToken = async (
+  cardId: string,
+): Promise<{ qrToken: string; expiresAt: number }> => {
+  return await getApiClient().get(`cards/${cardId}/qr-token`).json()
+}
+
 export const reserveRedemption = async (
   cardId: string,
   milestoneId: string,
-  sessionToken?: string
+  sessionToken?: string,
 ): Promise<ReserveResponseDto> => {
   return await getApiClient()
     .post(`redemptions/reserve`, {
       json: { cardId, milestoneId },
-      ...(sessionToken ? { headers: { Authorization: `Bearer ${sessionToken}` } } : {})
+      ...(sessionToken
+        ? { headers: { Authorization: `Bearer ${sessionToken}` } }
+        : {}),
     })
     .json()
 }

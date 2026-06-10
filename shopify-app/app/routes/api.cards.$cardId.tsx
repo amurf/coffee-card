@@ -5,25 +5,51 @@ import {
   verifySessionToken,
   getStoreNameFromPayload,
 } from "../utils/auth.server"
+import * as jose from "jose"
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  const cardId = params.cardId
-  if (!cardId) {
-    return json({ error: "Missing card ID" }, { status: 400 })
+  const token = params.cardId
+  if (!token) {
+    return json({ error: "Missing card token" }, { status: 400 })
   }
 
   try {
-    // 1. Verify the session token from Shopify POS
-    const payload = await verifySessionToken(request)
-    const authenticatedStore = getStoreNameFromPayload(payload)
+    // 1. Verify the session token from Shopify POS (cashier authenticated)
+    const sessionPayload = await verifySessionToken(request)
+    const authenticatedStore = getStoreNameFromPayload(sessionPayload)
 
-    // 2. Fetch the card details
-    const card = await getCardById(cardId)
+    // 2. Enforce dynamic token lookup: check if it's a valid JWT
+    if (token.split(".").length !== 3) {
+      return json(
+        { error: "Invalid scan code format. Please scan a live QR code." },
+        { status: 400 },
+      )
+    }
+
+    // 3. Verify and decrypt the dynamic QR token
+    const qrSecret =
+      process.env.QR_SECRET ||
+      "coffee-card-default-qr-hmac-secret-key-32-chars-long"
+    const secret = new TextEncoder().encode(qrSecret)
+
+    let decodedCardId: string
+    try {
+      const { payload: qrPayload } = await jose.jwtVerify(token, secret)
+      decodedCardId = qrPayload.cardId as string
+    } catch (e) {
+      return json(
+        { error: "Scan code expired or invalid. Please scan a live QR code." },
+        { status: 400 },
+      )
+    }
+
+    // 4. Fetch the card details using the decrypted card ID
+    const card = await getCardById(decodedCardId)
     if (!card) {
       return json({ error: "Card not found" }, { status: 404 })
     }
 
-    // 3. Enforce tenant isolation (only allow matching store to view its cards)
+    // 5. Enforce tenant isolation
     if (card.storeName !== authenticatedStore) {
       console.warn(
         `Unauthorized access attempt: Store ${authenticatedStore} tried to access card of Store ${card.storeName}`,

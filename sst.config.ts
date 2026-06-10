@@ -23,13 +23,25 @@ export default $config({
 
     const api = new sst.aws.ApiGatewayV2("Api")
 
+    const qrSecret =
+      process.env.QR_SECRET ||
+      "coffee-card-default-qr-hmac-secret-key-32-chars-long"
+
     const routeConfig = {
       link: [table],
-      environment: { TABLE_NAME: table.name },
+      environment: {
+        TABLE_NAME: table.name,
+        QR_SECRET: qrSecret,
+      },
     }
 
     api.route("GET /cards/{cardId}", {
       handler: "backend/src/lambda/card/index.handler",
+      ...routeConfig,
+    })
+
+    api.route("GET /cards/{cardId}/qr-token", {
+      handler: "backend/src/lambda/qr-token/index.handler",
       ...routeConfig,
     })
 
@@ -60,13 +72,16 @@ export default $config({
         // Frontend (Needs API URL)
         fs.writeFileSync("web-frontend/.env", `VITE_API_URL=${url}\n`)
 
-        // Backend (Needs Table Name)
-        fs.writeFileSync("backend/.env", `TABLE_NAME=${tableName}\n`)
+        // Backend (Needs Table Name and QR Secret)
+        fs.writeFileSync(
+          "backend/.env",
+          `TABLE_NAME=${tableName}\nQR_SECRET=${qrSecret}\n`,
+        )
 
-        // Shopify App (Needs Table Name for local DB calls, and API URL)
+        // Shopify App (Needs Table Name, API URL and QR Secret)
         fs.writeFileSync(
           "shopify-app/.env",
-          `TABLE_NAME=${tableName}\nVITE_API_URL=${url}\n`,
+          `TABLE_NAME=${tableName}\nVITE_API_URL=${url}\nQR_SECRET=${qrSecret}\n`,
         )
 
         // Read Shopify App URL from shopify.app.toml to configure POS extension API proxy
