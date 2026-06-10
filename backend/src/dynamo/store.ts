@@ -1,7 +1,8 @@
 import { LoyaltyCardModel, StoreProfileModel } from "@coffee-card/shared"
-import { QueryCommand, GetCommand } from "@aws-sdk/lib-dynamodb"
+import { QueryCommand, GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb"
 import { cardIdToSK, insertData, storeNameToPK } from "./helpers"
 import { TABLE_NAME, docClient } from "."
+import { syncCardToSquare } from "../integrations/square"
 
 export async function createStore(
   storeName: string,
@@ -15,6 +16,10 @@ export async function createStore(
     storeId,
     storeName,
     location: "",
+    posType: "SHOPIFY",
+    posConfig: {
+      shopifyShop: `${storeName}.myshopify.com`,
+    },
     rewardRules: {
       earningRule: { type: "ITEM_PURCHASE" },
       milestones: [
@@ -59,7 +64,18 @@ export const createNewCardForStore = async (
     redeemedMilestones: [],
   }
 
-  return await insertData(newCard)
+  const savedCard = await insertData(newCard)
+
+  // Asynchronously trigger Square Customer Directory sync if configured
+  if (store.posType === "SQUARE") {
+    try {
+      await syncCardToSquare(store, cardId)
+    } catch (err) {
+      console.error(`Failed to sync card ${cardId} to Square:`, err)
+    }
+  }
+
+  return savedCard
 }
 
 export const getStoreByName = async (
@@ -100,4 +116,42 @@ export const getStoreCards = async (
   }
 
   return []
+}
+
+export const getStoreBySquareLocation = async (
+  locationId: string,
+): Promise<{ storeName: string; accessToken: string } | null> => {
+  const command = new GetCommand({
+    TableName: TABLE_NAME,
+    Key: {
+      PK: "INTEGRATION#SQUARE",
+      SK: `LOCATION#${locationId}`,
+    },
+  })
+
+  const response = await docClient.send(command)
+  if (!response.Item) {
+    return null
+  }
+
+  return response.Item as { storeName: string; accessToken: string }
+}
+
+export const linkStoreToSquare = async (
+  storeName: string,
+  locationId: string,
+  accessToken: string,
+): Promise<void> => {
+  const command = new PutCommand({
+    TableName: TABLE_NAME,
+    Item: {
+      PK: "INTEGRATION#SQUARE",
+      SK: `LOCATION#${locationId}`,
+      storeName,
+      accessToken,
+      updatedAt: new Date().toISOString(),
+    },
+  })
+
+  await docClient.send(command)
 }

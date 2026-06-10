@@ -47,6 +47,14 @@ export const StoreProfileSchema = z.object({
     })
     .optional(),
   rewardRules: RewardRulesSchema.optional(),
+  posType: z.enum(["SHOPIFY", "SQUARE", "NONE"]).optional(),
+  posConfig: z
+    .object({
+      shopifyShop: z.string().optional(),
+      squareLocationId: z.string().optional(),
+      squareAccessToken: z.string().optional(),
+    })
+    .optional(),
 })
 
 export type StoreProfileModel = z.infer<typeof StoreProfileSchema>

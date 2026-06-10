@@ -65,6 +65,11 @@ export default $config({
       ...routeConfig,
     })
 
+    api.route("POST /integrations/square/webhook", {
+      handler: "backend/src/lambda/integrations/square/webhook/index.handler",
+      ...routeConfig,
+    })
+
     api.url.apply((url) => {
       table.name.apply((tableName) => {
         const fs = require("fs")
