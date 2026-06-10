@@ -2,7 +2,7 @@ packages:
   - backend
   - shared
   - web-frontend
-  - shopify-app
+  - integrations/shopify
 
 onlyBuiltDependencies:
   - aws-sdk

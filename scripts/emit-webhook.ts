@@ -1,7 +1,7 @@
 import dotenv from "dotenv"
 import ky from "ky"
 
-dotenv.config({ path: "./shopify-app/.env" })
+dotenv.config({ path: "./integrations/shopify/.env" })
 
 const SHOPIFY_APP_URL = process.env.SHOPIFY_APP_URL || "http://localhost:3000"
 

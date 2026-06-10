@@ -29,13 +29,13 @@ A privacy-focused, zero-account digital loyalty card system for coffee shops.
   - **OKLCH Colors**: Modern, vibrant color palettes.
   - **Dark Mode**: Native support.
 
-### 3. Shopify App (`shopify-app`)
+### 3. Shopify Integration (`integrations/shopify`)
 - **Stack**: Remix, Shopify App Bridge, Polaris.
 - **Role**: Merchant-facing dashboard embedded in Shopify Admin/POS.
 - **Features**:
   - View Store Details.
-  - Scan Customer QR Codes (to be implemented).
-  - Redeem Stamps (to be verified).
+  - Scan Customer QR Codes.
+  - Redeem Stamps.
   - View recent loyalty cards.
 
 ### 4. Shared (`packages/shared`)

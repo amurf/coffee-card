@@ -23,8 +23,8 @@
     "node": "^18.20 || ^20.10 || >=21.0.0"
   },
   "dependencies": {
-    "@coffee-card/backend": "file:../backend",
-    "@coffee-card/shared": "file:../shared",
+    "@coffee-card/backend": "file:../../backend",
+    "@coffee-card/shared": "file:../../shared",
     "@prisma/client": "^6.19.2",
     "@remix-run/dev": "^2.16.1",
     "@remix-run/fs-routes": "^2.16.1",

@@ -18,6 +18,8 @@ import {
 } from "@shopify/polaris"
 import { TitleBar } from "@shopify/app-bridge-react"
 import { Html5QrcodeScanner } from "html5-qrcode"
+import { authenticate } from "../shopify.server"
+import * as jose from "jose"
 import {
   getCardById,
   getStoreByName,
@@ -35,13 +37,33 @@ type ActionData = {
 }
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  await authenticate.admin(request)
+  const { session } = await authenticate.admin(request)
+  const authenticatedStore = session.shop.split(".")[0]
+
   const formData = await request.formData()
-  const cardId = formData.get("cardId") as string
+  const cardIdInput = formData.get("cardId") as string
   const actionType = formData.get("_action") as string
 
-  if (!cardId) {
+  if (!cardIdInput) {
     return json<ActionData>({ error: "Card ID is required" }, { status: 400 })
+  }
+
+  // 1. Determine if cardId is a dynamic JWT token or a raw UUID
+  let cardId = cardIdInput
+  if (cardIdInput.split(".").length === 3) {
+    const qrSecret =
+      process.env.QR_SECRET ||
+      "coffee-card-default-qr-hmac-secret-key-32-chars-long"
+    const secret = new TextEncoder().encode(qrSecret)
+    try {
+      const { payload: qrPayload } = await jose.jwtVerify(cardIdInput, secret)
+      cardId = qrPayload.cardId as string
+    } catch (e) {
+      return json<ActionData>(
+        { error: "Scan code expired or invalid. Please scan a live QR code." },
+        { status: 400 },
+      )
+    }
   }
 
   try {
@@ -74,6 +96,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         { status: 404 },
       )
     }
+
+    // Enforce tenant isolation
+    if (card.storeName !== authenticatedStore) {
+      return json<ActionData>(
+        { error: "Unauthorized: Card belongs to another store" },
+        { status: 403 },
+      )
+    }
+
     const store = await getStoreByName(card.storeName)
     if (!store) {
       return json<ActionData>(

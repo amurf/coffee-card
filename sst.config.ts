@@ -68,39 +68,26 @@ export default $config({
     api.url.apply((url) => {
       table.name.apply((tableName) => {
         const fs = require("fs")
+        const path = require("path")
+
+        const rootDir = process.cwd()
 
         // Frontend (Needs API URL)
-        fs.writeFileSync("web-frontend/.env", `VITE_API_URL=${url}\n`)
+        fs.writeFileSync(
+          path.resolve(rootDir, "web-frontend/.env"),
+          `VITE_API_URL=${url}\n`,
+        )
 
         // Backend (Needs Table Name and QR Secret)
         fs.writeFileSync(
-          "backend/.env",
+          path.resolve(rootDir, "backend/.env"),
           `TABLE_NAME=${tableName}\nQR_SECRET=${qrSecret}\n`,
         )
 
-        // Shopify App (Needs Table Name, API URL and QR Secret)
+        // Shopify App (Needs Table Name and QR Secret)
         fs.writeFileSync(
-          "shopify-app/.env",
-          `TABLE_NAME=${tableName}\nVITE_API_URL=${url}\nQR_SECRET=${qrSecret}\n`,
-        )
-
-        // Read Shopify App URL from shopify.app.toml to configure POS extension API proxy
-        let appUrl = url
-        try {
-          const toml = fs.readFileSync("shopify-app/shopify.app.toml", "utf8")
-          const match = toml.match(/application_url\s*=\s*"([^"]+)"/)
-          if (match && match[1]) {
-            appUrl = match[1]
-          }
-        } catch (e) {
-          console.warn(
-            "Could not read application_url from shopify.app.toml, using API Gateway URL fallback",
-          )
-        }
-
-        fs.writeFileSync(
-          "shopify-app/extensions/redeem-coffee/.env",
-          `VITE_API_URL=${appUrl}/api\n`,
+          path.resolve(rootDir, "integrations/shopify/.env"),
+          `TABLE_NAME=${tableName}\nQR_SECRET=${qrSecret}\n`,
         )
       })
     })
