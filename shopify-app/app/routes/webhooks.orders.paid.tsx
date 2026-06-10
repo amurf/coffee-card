@@ -31,10 +31,22 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         let stampsToAward = 0
         const earningRule = store.rewardRules.earningRule
 
+        const lineItems = typedPayload.line_items || []
+        const skuPrefix = store.rewardRules.eligibility?.skuPrefix
+
+        let eligibleItems = lineItems
+        if (skuPrefix) {
+          eligibleItems = lineItems.filter(
+            (item: any) => item.sku && item.sku.startsWith(skuPrefix),
+          )
+          console.log(
+            `Filtering by SKU prefix "${skuPrefix}". Eligible items: ${eligibleItems.length}/${lineItems.length}`,
+          )
+        }
+
         if (earningRule.type === "ITEM_PURCHASE") {
-          // Sum up quantities of all items purchased
-          const lineItems = typedPayload.line_items || []
-          stampsToAward = lineItems.reduce(
+          // Sum up quantities of eligible items purchased
+          stampsToAward = eligibleItems.reduce(
             (acc: number, item: any) => acc + (item.quantity || 0),
             0,
           )
@@ -42,11 +54,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
             `Earning rule is ITEM_PURCHASE. Awarding ${stampsToAward} stamps.`,
           )
         } else if (earningRule.type === "SPEND_AMOUNT") {
-          const spendAmount = parseFloat(typedPayload.total_price || "0")
+          // Sum up spend of eligible items purchased (excludes non-eligible items, tax, and shipping)
+          const eligibleSpend = eligibleItems.reduce(
+            (acc: number, item: any) =>
+              acc + parseFloat(item.price || "0") * (item.quantity || 0),
+            0,
+          )
           const amountPerStamp = earningRule.amountPerStamp || 10
-          stampsToAward = Math.floor(spendAmount / amountPerStamp)
+          stampsToAward = Math.floor(eligibleSpend / amountPerStamp)
           console.log(
-            `Earning rule is SPEND_AMOUNT (spend: $${spendAmount}, threshold: $${amountPerStamp}). Awarding ${stampsToAward} stamps.`,
+            `Earning rule is SPEND_AMOUNT (eligible spend: $${eligibleSpend}, threshold: $${amountPerStamp}). Awarding ${stampsToAward} stamps.`,
           )
         }
 

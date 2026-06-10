@@ -22,9 +22,14 @@ export const MilestoneRewardSchema = z.object({
   description: z.string(),
 })
 
+export const EligibilitySchema = z.object({
+  skuPrefix: z.string().optional(),
+})
+
 export const RewardRulesSchema = z.object({
   earningRule: EarningRuleSchema,
   milestones: z.array(MilestoneRewardSchema),
+  eligibility: EligibilitySchema.optional(),
 })
 
 export const StoreProfileSchema = z.object({
@@ -34,11 +39,13 @@ export const StoreProfileSchema = z.object({
   storeId: z.string(),
   storeName: z.string(),
   location: z.string(),
-  themeOptions: z.object({
-    primaryColor: z.string(),
-    secondaryColor: z.string(),
-    logoUrl: z.string().optional(),
-  }).optional(),
+  themeOptions: z
+    .object({
+      primaryColor: z.string(),
+      secondaryColor: z.string(),
+      logoUrl: z.string().optional(),
+    })
+    .optional(),
   rewardRules: RewardRulesSchema.optional(),
 })
 
