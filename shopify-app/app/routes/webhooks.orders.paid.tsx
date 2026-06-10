@@ -1,36 +1,85 @@
-import type { ActionFunctionArgs } from "@remix-run/node";
-import { authenticate } from "../shopify.server";
-import { commitRedemption, configureApi } from "@coffee-card/shared";
-
-if (process.env.VITE_API_URL) {
-  configureApi(process.env.VITE_API_URL);
-} else {
-  console.warn("VITE_API_URL is missing in webhooks environment");
-}
+import type { ActionFunctionArgs } from "@remix-run/node"
+import { authenticate } from "../shopify.server"
+import { getStoreByName, redeem, commitRedemption } from "@coffee-card/backend"
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { shop, payload, topic } = await authenticate.webhook(request);
+  const { shop, payload, topic } = await authenticate.webhook(request)
 
-  console.log(`Received ${topic} webhook for ${shop}`);
+  console.log(`Received ${topic} webhook for ${shop}`)
 
-  // We are relying on the route name (webhooks.orders.paid.tsx) so topic is implicitly orders/paid.
-  const typedPayload = payload as any;
-  const noteAttributes = typedPayload.note_attributes || [];
-  const tokenAttr = noteAttributes.find((attr: any) => attr.name === "_custom_redemption_token");
-  
-  if (tokenAttr && tokenAttr.value) {
-    console.log(`Found redemption token: ${tokenAttr.value}, committing...`);
+  const typedPayload = payload as any
+  const noteAttributes = typedPayload.note_attributes || []
+
+  const cardIdAttr = noteAttributes.find(
+    (attr: any) => attr.name === "_custom_card_id",
+  )
+  const tokenAttr = noteAttributes.find(
+    (attr: any) => attr.name === "_custom_redemption_token",
+  )
+
+  const storeName = shop.split(".")[0]
+
+  // 1. Process stamp earning if a card is linked to the order
+  if (cardIdAttr && cardIdAttr.value) {
+    const cardId = cardIdAttr.value
+    console.log(
+      `Found card ID: ${cardId} linked to order. Processing stamp award...`,
+    )
     try {
-      await commitRedemption(tokenAttr.value);
-      console.log("Successfully committed redemption", tokenAttr.value);
+      const store = await getStoreByName(storeName)
+      if (store && store.rewardRules) {
+        let stampsToAward = 0
+        const earningRule = store.rewardRules.earningRule
+
+        if (earningRule.type === "ITEM_PURCHASE") {
+          // Sum up quantities of all items purchased
+          const lineItems = typedPayload.line_items || []
+          stampsToAward = lineItems.reduce(
+            (acc: number, item: any) => acc + (item.quantity || 0),
+            0,
+          )
+          console.log(
+            `Earning rule is ITEM_PURCHASE. Awarding ${stampsToAward} stamps.`,
+          )
+        } else if (earningRule.type === "SPEND_AMOUNT") {
+          const spendAmount = parseFloat(typedPayload.total_price || "0")
+          const amountPerStamp = earningRule.amountPerStamp || 10
+          stampsToAward = Math.floor(spendAmount / amountPerStamp)
+          console.log(
+            `Earning rule is SPEND_AMOUNT (spend: $${spendAmount}, threshold: $${amountPerStamp}). Awarding ${stampsToAward} stamps.`,
+          )
+        }
+
+        if (stampsToAward > 0) {
+          const updatedCard = await redeem(cardId, stampsToAward)
+          if (updatedCard) {
+            console.log(
+              `Successfully awarded ${stampsToAward} stamps to card ${cardId}. New balance: ${updatedCard.stampCount}`,
+            )
+          } else {
+            console.error(`Failed to award stamps: Card ${cardId} not found.`)
+          }
+        }
+      } else {
+        console.warn(
+          `Store profile or reward rules not found for store: ${storeName}`,
+        )
+      }
     } catch (err) {
-      console.error("Failed to commit redemption:", err);
-      // Depending on retry strategy, we might want to throw here to force Shopify to retry.
-      // But typically, returning 200 is safest unless we're sure it's a transient error.
+      console.error("Error awarding stamps during webhook:", err)
     }
-  } else {
-    console.log("No _custom_redemption_token found in order notes.");
   }
 
-  return new Response("Webhook processed", { status: 200 });
-};
+  // 2. Commit redemption if a reward was claimed
+  if (tokenAttr && tokenAttr.value) {
+    console.log(`Found redemption token: ${tokenAttr.value}, committing...`)
+    try {
+      await commitRedemption(tokenAttr.value)
+      console.log("Successfully committed redemption", tokenAttr.value)
+    } catch (err) {
+      console.error("Failed to commit redemption:", err)
+    }
+  }
+
+  return new Response("Webhook processed", { status: 200 })
+}

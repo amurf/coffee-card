@@ -10,11 +10,15 @@ import {
   useScannerDataSubscription,
   CameraScanner,
   useApi,
-  Button
+  Button,
 } from "@shopify/ui-extensions-react/point-of-sale"
 
 import type { LoyaltyCardDto } from "@coffee-card/shared"
-import { getCardById, reserveRedemption, configureApi } from "@coffee-card/shared"
+import {
+  getCardById,
+  reserveRedemption,
+  configureApi,
+} from "@coffee-card/shared"
 import { Card } from "@shopify/polaris"
 
 if (import.meta.env.VITE_API_URL) {
@@ -67,7 +71,7 @@ const Modal = () => {
   const [cardId, setCardId] = useState<string | null>(null)
   const [card, setCard] = useState<LoyaltyCardDto | null>(null)
   const [loading, setLoading] = useState(false)
-  
+
   const api = useApi()
   const getSessionToken = api.session.getSessionToken
   const cart = api.cart
@@ -77,7 +81,12 @@ const Modal = () => {
     setLoading(true)
 
     getCardById(scannedCardId)
-      .then((cardData) => setCard(cardData))
+      .then(async (cardData) => {
+        setCard(cardData)
+        await cart.addCartProperties({
+          _custom_card_id: scannedCardId,
+        })
+      })
       .catch((error) => console.error("Error fetching card:", error))
       .finally(() => setLoading(false))
   }
@@ -86,16 +95,32 @@ const Modal = () => {
     if (!cardId) return
     setLoading(true)
     try {
-      const token = await getSessionToken();
+      const token = await getSessionToken()
       const res = await reserveRedemption(cardId, "m1", token)
-      
+
       await cart.addCartProperties({
-        _custom_redemption_token: res.redemptionToken
+        _custom_redemption_token: res.redemptionToken,
       })
-      
+
       setCardId(null) // Reset flow
     } catch (err) {
       console.error("Failed to reserve coffee:", err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleReset = async () => {
+    setLoading(true)
+    try {
+      await cart.addCartProperties({
+        _custom_card_id: "",
+        _custom_redemption_token: "",
+      })
+      setCardId(null)
+      setCard(null)
+    } catch (err) {
+      console.error("Failed to clear cart:", err)
     } finally {
       setLoading(false)
     }
@@ -110,6 +135,7 @@ const Modal = () => {
               <Loading loading={loading}>
                 <CardDetails card={card} />
                 <Button title="Redeem Reward" onPress={handleRedeem} />
+                <Button title="Remove Card" onPress={handleReset} />
               </Loading>
             </Section>
           )}
