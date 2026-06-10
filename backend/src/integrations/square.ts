@@ -1,4 +1,101 @@
 import { StoreProfileModel } from "@coffee-card/shared"
+import crypto from "crypto"
+
+/**
+ * Verifies the signature of an incoming Square webhook request.
+ */
+export function verifySquareSignature(
+  signature: string,
+  notificationUrl: string,
+  rawBody: string,
+  signatureKey: string,
+): boolean {
+  const combined = notificationUrl + rawBody
+  const hmac = crypto.createHmac("sha256", signatureKey)
+  hmac.update(combined)
+  const calculatedSignature = hmac.digest("base64")
+
+  const calcBuf = Buffer.from(calculatedSignature)
+  const sigBuf = Buffer.from(signature)
+
+  if (calcBuf.length !== sigBuf.length) {
+    return false
+  }
+
+  return crypto.timingSafeEqual(calcBuf, sigBuf)
+}
+
+/**
+ * Retrieves the customer's reference_id (which is our card UUID) from their Square Customer profile.
+ */
+export async function getSquareCustomerReferenceId(
+  customerId: string,
+  token: string,
+): Promise<string | null> {
+  const isSandbox = token.startsWith("EAAAEP") || token.startsWith("sandbox-")
+  const baseUrl = isSandbox
+    ? "https://connect.squareupsandbox.com"
+    : "https://connect.squareup.com"
+
+  try {
+    const response = await fetch(`${baseUrl}/v2/customers/${customerId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Square-Version": "2024-05-15",
+      },
+    })
+
+    if (!response.ok) {
+      console.error(
+        `Failed to fetch Square customer ${customerId}:`,
+        await response.text(),
+      )
+      return null
+    }
+
+    const data = (await response.json()) as any
+    return data.customer?.reference_id || null
+  } catch (err) {
+    console.error(`Error fetching customer ${customerId} from Square:`, err)
+    return null
+  }
+}
+
+/**
+ * Retrieves the full transaction order details from Square.
+ */
+export async function getSquareOrder(
+  orderId: string,
+  token: string,
+): Promise<any | null> {
+  const isSandbox = token.startsWith("EAAAEP") || token.startsWith("sandbox-")
+  const baseUrl = isSandbox
+    ? "https://connect.squareupsandbox.com"
+    : "https://connect.squareup.com"
+
+  try {
+    const response = await fetch(`${baseUrl}/v2/orders/${orderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Square-Version": "2024-05-15",
+      },
+    })
+
+    if (!response.ok) {
+      console.error(
+        `Failed to fetch Square order ${orderId}:`,
+        await response.text(),
+      )
+      return null
+    }
+
+    const data = (await response.json()) as any
+    return data.order || null
+  } catch (err) {
+    console.error(`Error fetching order ${orderId} from Square:`, err)
+    return null
+  }
+}
 
 /**
  * Registers an anonymous customer profile in the merchant's Square Customer Directory,
