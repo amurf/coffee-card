@@ -10,6 +10,7 @@ import {
   verifySquareSignature,
   getSquareCustomerReferenceId,
   getSquareOrder,
+  getSquareAccessToken,
 } from "../../../../integrations/square"
 
 const SQUARE_WEBHOOK_SIGNATURE_KEY =
@@ -119,11 +120,12 @@ export async function handler(
       }
     }
 
+    // Retrieve active access token (with rotation check)
+    const accessToken =
+      (await getSquareAccessToken(store.storeName)) || mapping.accessToken
+
     // 4. Retrieve linked Card ID UUID from Square customer profile
-    const cardId = await getSquareCustomerReferenceId(
-      customerId,
-      mapping.accessToken,
-    )
+    const cardId = await getSquareCustomerReferenceId(customerId, accessToken)
     if (!cardId) {
       console.warn(`No card ID (reference_id) found on customer: ${customerId}`)
       return {
@@ -133,7 +135,7 @@ export async function handler(
     }
 
     // 5. Fetch full Order details from Square API
-    const fullOrder = await getSquareOrder(orderData.id, mapping.accessToken)
+    const fullOrder = await getSquareOrder(orderData.id, accessToken)
     if (!fullOrder) {
       return {
         statusCode: 500,

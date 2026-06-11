@@ -53,6 +53,9 @@ export const StoreProfileSchema = z.object({
       shopifyShop: z.string().optional(),
       squareLocationId: z.string().optional(),
       squareAccessToken: z.string().optional(),
+      squareRefreshToken: z.string().optional(),
+      squareTokenExpiresAt: z.string().optional(),
+      squareMerchantId: z.string().optional(),
     })
     .optional(),
 })

@@ -38,6 +38,9 @@ export default $config({
       environment: {
         TABLE_NAME: table.name,
         QR_SECRET: qrSecret,
+        SQUARE_CLIENT_ID: process.env.SQUARE_CLIENT_ID || "",
+        SQUARE_CLIENT_SECRET: process.env.SQUARE_CLIENT_SECRET || "",
+        SQUARE_REDIRECT_URI: process.env.SQUARE_REDIRECT_URI || "",
       },
     }
 
@@ -76,6 +79,11 @@ export default $config({
       ...routeConfig,
     })
 
+    api.route("GET /integrations/square/callback", {
+      handler: "backend/src/lambda/integrations/square/callback/index.handler",
+      ...routeConfig,
+    })
+
     api.url.apply((url) => {
       table.name.apply((tableName) => {
         const fs = require("fs")
@@ -95,10 +103,10 @@ export default $config({
           `TABLE_NAME=${tableName}\nQR_SECRET=${qrSecret}\n`,
         )
 
-        // Shopify App (Needs Table Name and QR Secret)
+        // Shopify App (Needs Table Name, QR Secret, and API URL)
         fs.writeFileSync(
           path.resolve(rootDir, "integrations/shopify/.env"),
-          `TABLE_NAME=${tableName}\nQR_SECRET=${qrSecret}\n`,
+          `TABLE_NAME=${tableName}\nQR_SECRET=${qrSecret}\nAPI_URL=${url}\n`,
         )
       })
     })
