@@ -3,6 +3,7 @@ import {
   getStoreBySquareLocation,
   getStoreByName,
   redeem,
+  awardStampsForOrder,
 } from "../../../../dynamo"
 import { calculateStamps, NormalizedLineItem } from "../../../../core/loyalty"
 import {
@@ -155,11 +156,23 @@ export async function handler(
 
     // 7. Award stamps
     if (stampsToAward > 0) {
-      const updatedCard = await redeem(cardId, stampsToAward)
-      if (updatedCard) {
+      const result = await awardStampsForOrder(
+        store.storeName,
+        cardId,
+        orderData.id, // Square order ID
+        stampsToAward,
+      )
+
+      if (result.success && result.updatedCard) {
         console.log(
-          `Awarded ${stampsToAward} stamps to card ${cardId}. Balance: ${updatedCard.stampCount}`,
+          `Awarded ${stampsToAward} stamps to card ${cardId}. Balance: ${result.updatedCard.stampCount}`,
         )
+      } else if (result.alreadyProcessed) {
+        console.log(
+          `Duplicate webhook skipped: Order ${orderData.id} has already been processed.`,
+        )
+      } else {
+        console.error(`Failed to award stamps: Card ${cardId} not found.`)
       }
     } else {
       console.log("No stamps to award for this transaction")

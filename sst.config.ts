@@ -25,7 +25,13 @@ export default $config({
 
     const qrSecret =
       process.env.QR_SECRET ||
-      "coffee-card-default-qr-hmac-secret-key-32-chars-long"
+      (input?.stage !== "production"
+        ? "coffee-card-default-qr-hmac-secret-key-32-chars-long"
+        : (() => {
+            throw new Error(
+              "QR_SECRET environment variable is required in production stage",
+            )
+          })())
 
     const routeConfig = {
       link: [table],

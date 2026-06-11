@@ -51,9 +51,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   // 1. Determine if cardId is a dynamic JWT token or a raw UUID
   let cardId = cardIdInput
   if (cardIdInput.split(".").length === 3) {
-    const qrSecret =
-      process.env.QR_SECRET ||
-      "coffee-card-default-qr-hmac-secret-key-32-chars-long"
+    const qrSecret = process.env.QR_SECRET
+    if (!qrSecret) {
+      throw new Error("QR_SECRET environment variable is not configured")
+    }
     const secret = new TextEncoder().encode(qrSecret)
     try {
       const { payload: qrPayload } = await jose.jwtVerify(cardIdInput, secret)

@@ -42,7 +42,7 @@ export const GetStoreParamsSchema = z.object({
   storeId: z.string(),
 })
 
-export type GetStoreParams = z.infer<typeof CreateCardForStoreParamsSchema>
+export type GetStoreParams = z.infer<typeof GetStoreParamsSchema>
 
 export const CreateCardForStoreParamsSchema = z.object({
   storeId: z.string(),

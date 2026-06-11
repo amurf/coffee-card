@@ -1,6 +1,13 @@
 import type { ActionFunctionArgs } from "@remix-run/node"
 import { authenticate } from "../shopify.server"
-import { getStoreByName, redeem, commitRedemption } from "@coffee-card/backend"
+import {
+  getStoreByName,
+  redeem,
+  commitRedemption,
+  calculateStamps,
+  awardStampsForOrder,
+  type NormalizedLineItem,
+} from "@coffee-card/backend"
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { shop, payload, topic } = await authenticate.webhook(request)
@@ -28,50 +35,33 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     try {
       const store = await getStoreByName(storeName)
       if (store && store.rewardRules) {
-        let stampsToAward = 0
-        const earningRule = store.rewardRules.earningRule
-
         const lineItems = typedPayload.line_items || []
-        const skuPrefix = store.rewardRules.eligibility?.skuPrefix
+        const normalizedItems: NormalizedLineItem[] = lineItems.map(
+          (item: any) => ({
+            sku: item.sku,
+            name: item.title,
+            quantity: item.quantity || 0,
+            priceCents: Math.round(parseFloat(item.price || "0") * 100),
+          }),
+        )
 
-        let eligibleItems = lineItems
-        if (skuPrefix) {
-          eligibleItems = lineItems.filter(
-            (item: any) => item.sku && item.sku.startsWith(skuPrefix),
-          )
-          console.log(
-            `Filtering by SKU prefix "${skuPrefix}". Eligible items: ${eligibleItems.length}/${lineItems.length}`,
-          )
-        }
-
-        if (earningRule.type === "ITEM_PURCHASE") {
-          // Sum up quantities of eligible items purchased
-          stampsToAward = eligibleItems.reduce(
-            (acc: number, item: any) => acc + (item.quantity || 0),
-            0,
-          )
-          console.log(
-            `Earning rule is ITEM_PURCHASE. Awarding ${stampsToAward} stamps.`,
-          )
-        } else if (earningRule.type === "SPEND_AMOUNT") {
-          // Sum up spend of eligible items purchased (excludes non-eligible items, tax, and shipping)
-          const eligibleSpend = eligibleItems.reduce(
-            (acc: number, item: any) =>
-              acc + parseFloat(item.price || "0") * (item.quantity || 0),
-            0,
-          )
-          const amountPerStamp = earningRule.amountPerStamp || 10
-          stampsToAward = Math.floor(eligibleSpend / amountPerStamp)
-          console.log(
-            `Earning rule is SPEND_AMOUNT (eligible spend: $${eligibleSpend}, threshold: $${amountPerStamp}). Awarding ${stampsToAward} stamps.`,
-          )
-        }
+        const stampsToAward = calculateStamps(store, normalizedItems)
 
         if (stampsToAward > 0) {
-          const updatedCard = await redeem(cardId, stampsToAward)
-          if (updatedCard) {
+          const result = await awardStampsForOrder(
+            storeName,
+            cardId,
+            typedPayload.id.toString(), // Shopify order ID
+            stampsToAward,
+          )
+
+          if (result.success && result.updatedCard) {
             console.log(
-              `Successfully awarded ${stampsToAward} stamps to card ${cardId}. New balance: ${updatedCard.stampCount}`,
+              `Successfully awarded ${stampsToAward} stamps to card ${cardId}. New balance: ${result.updatedCard.stampCount}`,
+            )
+          } else if (result.alreadyProcessed) {
+            console.log(
+              `Duplicate webhook skipped: Order ${typedPayload.id} has already been processed.`,
             )
           } else {
             console.error(`Failed to award stamps: Card ${cardId} not found.`)

@@ -8,9 +8,10 @@ import {
 import { validateParameters, handleErrors } from "../error"
 import { GetLoyaltyCardParamsSchema } from "@coffee-card/shared"
 
-const QR_SECRET =
-  process.env.QR_SECRET ||
-  "coffee-card-default-qr-hmac-secret-key-32-chars-long"
+const QR_SECRET = process.env.QR_SECRET
+if (!QR_SECRET) {
+  throw new Error("QR_SECRET environment variable is not configured")
+}
 
 export async function handler({
   pathParameters,

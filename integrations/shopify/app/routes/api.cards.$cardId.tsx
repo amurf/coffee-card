@@ -26,10 +26,10 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       )
     }
 
-    // 3. Verify and decrypt the dynamic QR token
-    const qrSecret =
-      process.env.QR_SECRET ||
-      "coffee-card-default-qr-hmac-secret-key-32-chars-long"
+    const qrSecret = process.env.QR_SECRET
+    if (!qrSecret) {
+      throw new Error("QR_SECRET environment variable is not configured")
+    }
     const secret = new TextEncoder().encode(qrSecret)
 
     let decodedCardId: string

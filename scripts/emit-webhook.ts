@@ -13,7 +13,7 @@ async function emit() {
   const stamps = parseInt(process.argv[3] ?? "1", 10)
 
   const payload = {
-    id: 123456789,
+    id: Date.now(),
     note_attributes: [
       {
         name: "_custom_card_id",

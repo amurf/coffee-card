@@ -17,7 +17,7 @@ async function setupRealSquareResources(cardId: string, amountDollars: number) {
     console.log("No SQUARE_ACCESS_TOKEN found. Running in MOCK payload mode.")
     return {
       customerId: "SQUARE_CUSTOMER_MOCK_123",
-      orderId: "SQUARE_ORDER_MOCK_999",
+      orderId: `SQUARE_ORDER_MOCK_${crypto.randomUUID()}`,
     }
   }
 
