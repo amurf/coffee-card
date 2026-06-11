@@ -69,7 +69,7 @@ export const verifyQrToken = async (
   token: string,
 ): Promise<{ card: LoyaltyCardDto; store: StoreProfileDto }> => {
   return await getApiClient()
-    .post(`cards/verify-token`, { json: { token } })
+    .post(`merchant/cards/verify-token`, { json: { token } })
     .json()
 }
 
@@ -79,7 +79,7 @@ export const addStamps = async (
   passcode: string,
 ): Promise<LoyaltyCardDto> => {
   return await getApiClient()
-    .post(`cards/${cardId}/stamps`, {
+    .post(`merchant/cards/${cardId}/stamps`, {
       json: { stamps },
       headers: { Authorization: `Bearer ${passcode}` },
     })
@@ -92,7 +92,7 @@ export const claimReward = async (
   passcode: string,
 ): Promise<LoyaltyCardDto> => {
   return await getApiClient()
-    .post(`cards/${cardId}/claim`, {
+    .post(`merchant/cards/${cardId}/claim`, {
       json: { milestoneId },
       headers: { Authorization: `Bearer ${passcode}` },
     })

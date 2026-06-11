@@ -84,17 +84,17 @@ export default $config({
       ...routeConfig,
     })
 
-    api.route("POST /cards/verify-token", {
+    api.route("POST /merchant/cards/verify-token", {
       handler: "backend/src/lambda/verify-token/index.handler",
       ...routeConfig,
     })
 
-    api.route("POST /cards/{cardId}/stamps", {
+    api.route("POST /merchant/cards/{cardId}/stamps", {
       handler: "backend/src/lambda/add-stamps/index.handler",
       ...routeConfig,
     })
 
-    api.route("POST /cards/{cardId}/claim", {
+    api.route("POST /merchant/cards/{cardId}/claim", {
       handler: "backend/src/lambda/claim-reward/index.handler",
       ...routeConfig,
     })
