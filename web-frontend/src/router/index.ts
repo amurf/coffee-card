@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router"
 import CardPage from "../pages/CardPage.vue"
 import CreateCardPage from "../pages/CreateCardPage.vue"
+import MerchantScanPage from "../pages/MerchantScanPage.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,6 +20,11 @@ const router = createRouter({
       path: "/card/:cardId",
       name: "card",
       component: CardPage,
+    },
+    {
+      path: "/merchant/scan",
+      name: "merchant-scan",
+      component: MerchantScanPage,
     },
   ],
 })

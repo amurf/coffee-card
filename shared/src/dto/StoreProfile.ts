@@ -23,6 +23,7 @@ export const StoreProfileDtoSchema = z.object({
       squareMerchantId: z.string().optional(),
     })
     .optional(),
+  merchantPasscode: z.string().optional(),
 })
 
 export type StoreProfileDto = z.infer<typeof StoreProfileDtoSchema>
@@ -38,6 +39,7 @@ export const toStoreProfileDto = (
     rewardRules: model.rewardRules,
     posType: model.posType,
     posConfig: model.posConfig,
+    merchantPasscode: model.merchantPasscode,
   }
 }
 

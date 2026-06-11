@@ -31,6 +31,7 @@ export async function createStore(
         },
       ],
     },
+    merchantPasscode: "1234",
   }
 
   return await insertData(storeProfile)

@@ -197,6 +197,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      html5-qrcode:
+        specifier: ^2.3.8
+        version: 2.3.8
       lucide-vue-next:
         specifier: ^0.503.0
         version: 0.503.0(vue@3.5.27(typescript@5.9.3))

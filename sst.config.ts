@@ -84,6 +84,21 @@ export default $config({
       ...routeConfig,
     })
 
+    api.route("POST /cards/verify-token", {
+      handler: "backend/src/lambda/verify-token/index.handler",
+      ...routeConfig,
+    })
+
+    api.route("POST /cards/{cardId}/stamps", {
+      handler: "backend/src/lambda/add-stamps/index.handler",
+      ...routeConfig,
+    })
+
+    api.route("POST /cards/{cardId}/claim", {
+      handler: "backend/src/lambda/claim-reward/index.handler",
+      ...routeConfig,
+    })
+
     api.url.apply((url) => {
       table.name.apply((tableName) => {
         const fs = require("fs")

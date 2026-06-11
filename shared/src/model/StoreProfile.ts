@@ -58,6 +58,7 @@ export const StoreProfileSchema = z.object({
       squareMerchantId: z.string().optional(),
     })
     .optional(),
+  merchantPasscode: z.string().optional(),
 })
 
 export type StoreProfileModel = z.infer<typeof StoreProfileSchema>
