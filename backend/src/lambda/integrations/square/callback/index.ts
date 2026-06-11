@@ -7,7 +7,7 @@ export async function handler(
 ): Promise<APIGatewayProxyResult> {
   const query = event.queryStringParameters || {}
   const code = query.code
-  const shop = query.state // We passed shop name as state
+  const state = query.state // can be shopify:shop or standalone:store
   const error = query.error
 
   if (error) {
@@ -19,13 +19,16 @@ export async function handler(
     }
   }
 
-  if (!code || !shop) {
+  if (!code || !state) {
     return {
       statusCode: 400,
       headers: { "Content-Type": "text/html" },
       body: "<h1>Square Connection Failed</h1><p>Missing code or state parameter.</p>",
     }
   }
+
+  const isShopify = state.startsWith("shopify:")
+  const shop = isShopify ? state.replace("shopify:", "") : state.replace("standalone:", "")
 
   try {
     const store = await getStoreByName(shop)
@@ -96,14 +99,19 @@ export async function handler(
 
     console.log(`Successfully connected Square account for store ${shop}. Redirecting...`)
 
-    // Redirect merchant back to their Shopify admin integrations page
-    const appHandle = "coffee-card-dev" // fallback default app name
-    const shopifyUrl = `https://admin.shopify.com/store/${shop}/apps/${appHandle}/app/integrations?success=true`
+    let redirectUrl: string
+    if (isShopify) {
+      const appHandle = "coffee-card-dev" // fallback default app name
+      redirectUrl = `https://admin.shopify.com/store/${shop}/apps/${appHandle}/app/integrations?success=true`
+    } else {
+      const standaloneUrl = process.env.STANDALONE_FRONTEND_URL || "http://localhost:5173"
+      redirectUrl = `${standaloneUrl}/merchant/scan?success=true`
+    }
 
     return {
       statusCode: 302,
       headers: {
-        Location: shopifyUrl,
+        Location: redirectUrl,
         "Cache-Control": "no-cache",
       },
       body: "",

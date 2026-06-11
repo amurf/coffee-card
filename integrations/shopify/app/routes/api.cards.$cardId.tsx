@@ -1,11 +1,10 @@
 import { json, type LoaderFunctionArgs } from "@remix-run/node"
-import { getCardById } from "@coffee-card/backend"
+import { getCardById, verifyQrToken } from "@coffee-card/backend"
 import { toLoyaltyCardDto } from "@coffee-card/shared"
 import {
   verifySessionToken,
   getStoreNameFromPayload,
 } from "../utils/auth.server"
-import * as jose from "jose"
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const token = params.cardId
@@ -18,27 +17,17 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const sessionPayload = await verifySessionToken(request)
     const authenticatedStore = getStoreNameFromPayload(sessionPayload)
 
-    // 2. Enforce dynamic token lookup: check if it's a valid JWT
-    if (token.split(".").length !== 3) {
-      return json(
-        { error: "Invalid scan code format. Please scan a live QR code." },
-        { status: 400 },
-      )
-    }
-
     const qrSecret = process.env.QR_SECRET
     if (!qrSecret) {
       throw new Error("QR_SECRET environment variable is not configured")
     }
-    const secret = new TextEncoder().encode(qrSecret)
 
     let decodedCardId: string
     try {
-      const { payload: qrPayload } = await jose.jwtVerify(token, secret)
-      decodedCardId = qrPayload.cardId as string
-    } catch (e) {
+      decodedCardId = await verifyQrToken(token, qrSecret)
+    } catch (e: any) {
       return json(
-        { error: "Scan code expired or invalid. Please scan a live QR code." },
+        { error: e.message || "Scan code expired or invalid. Please scan a live QR code." },
         { status: 400 },
       )
     }

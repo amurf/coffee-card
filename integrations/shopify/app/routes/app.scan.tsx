@@ -19,13 +19,13 @@ import {
 import { TitleBar } from "@shopify/app-bridge-react"
 import { Html5QrcodeScanner } from "html5-qrcode"
 import { authenticate } from "../shopify.server"
-import * as jose from "jose"
 import {
   getCardById,
   getStoreByName,
   redeem,
   createPendingRedemption,
   commitRedemption,
+  verifyQrToken,
 } from "@coffee-card/backend"
 import { LoyaltyCardModel, StoreProfileModel } from "@coffee-card/shared"
 
@@ -55,13 +55,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     if (!qrSecret) {
       throw new Error("QR_SECRET environment variable is not configured")
     }
-    const secret = new TextEncoder().encode(qrSecret)
     try {
-      const { payload: qrPayload } = await jose.jwtVerify(cardIdInput, secret)
-      cardId = qrPayload.cardId as string
-    } catch (e) {
+      cardId = await verifyQrToken(cardIdInput, qrSecret)
+    } catch (e: any) {
       return json<ActionData>(
-        { error: "Scan code expired or invalid. Please scan a live QR code." },
+        { error: e.message || "Scan code expired or invalid. Please scan a live QR code." },
         { status: 400 },
       )
     }

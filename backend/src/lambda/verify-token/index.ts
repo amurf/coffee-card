@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
 import { getCardById, getStoreByName } from "../../dynamo"
-import * as jose from "jose"
+import { verifyQrToken } from "../../core/loyalty"
 import { promiseToLambdaResponse, lambdaResponseToAPIGatewayProxyResult } from "../helpers"
 import { handleErrors } from "../error"
 
@@ -25,15 +25,8 @@ export async function handler(
         if (!qrSecret) {
           throw new Error("QR_SECRET environment variable is not configured")
         }
-        const secret = new TextEncoder().encode(qrSecret)
 
-        let cardId: string
-        try {
-          const { payload: qrPayload } = await jose.jwtVerify(token, secret)
-          cardId = qrPayload.cardId as string
-        } catch (e) {
-          throw new Error("Scan code expired or invalid. Please scan a live QR code.")
-        }
+        const cardId = await verifyQrToken(token, qrSecret)
 
         const card = await getCardById(cardId)
         if (!card) {

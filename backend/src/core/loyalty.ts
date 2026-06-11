@@ -1,4 +1,5 @@
 import { StoreProfileModel } from "@coffee-card/shared"
+import * as jose from "jose"
 
 export interface NormalizedLineItem {
   sku?: string
@@ -43,3 +44,25 @@ export function calculateStamps(
 
   return 0
 }
+
+/**
+ * Verifies a signed QR token and returns the decoded cardId.
+ * Throws an error if the token is invalid or expired.
+ */
+export async function verifyQrToken(
+  token: string,
+  qrSecret: string,
+): Promise<string> {
+  if (token.split(".").length !== 3) {
+    throw new Error("Invalid scan code format. Please scan a live QR code.")
+  }
+
+  const secret = new TextEncoder().encode(qrSecret)
+  try {
+    const { payload } = await jose.jwtVerify(token, secret)
+    return payload.cardId as string
+  } catch (e) {
+    throw new Error("Scan code expired or invalid. Please scan a live QR code.")
+  }
+}
+

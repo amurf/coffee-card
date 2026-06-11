@@ -145,7 +145,7 @@ export default function IntegrationsPage() {
     ? "https://connect.squareupsandbox.com"
     : "https://connect.squareup.com"
 
-  const oauthUrl = `${oauthBase}/oauth2/authorize?client_id=${squareClientId}&scope=CUSTOMERS_WRITE+CUSTOMERS_READ+ORDERS_READ&state=${shop}&redirect_uri=${encodeURIComponent(squareRedirectUri)}`
+  const oauthUrl = `${oauthBase}/oauth2/authorize?client_id=${squareClientId}&scope=CUSTOMERS_WRITE+CUSTOMERS_READ+ORDERS_READ&state=shopify:${shop}&redirect_uri=${encodeURIComponent(squareRedirectUri)}`
 
   return (
     <Page>
