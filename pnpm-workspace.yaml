@@ -1,9 +1,0 @@
-packages:
-  - backend
-  - shared
-  - web-frontend
-  - integrations/shopify
-
-onlyBuiltDependencies:
-  - aws-sdk
-  - esbuild

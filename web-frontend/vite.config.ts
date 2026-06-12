@@ -9,6 +9,12 @@ import tailwindcss from "@tailwindcss/vite"
 export default defineConfig({
   server: {
     allowedHosts: ["localhost", ".a.free.pinggy.link"],
+    proxy: {
+      "/api": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+      },
+    },
   },
   plugins: [vue(), vueDevTools(), tailwindcss()],
   resolve: {

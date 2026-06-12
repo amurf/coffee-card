@@ -5,29 +5,27 @@
   "types": "src/index.ts",
   "description": "",
   "scripts": {
-    "prebuild": "rm -rf dist && tsc --noEmit",
-    "build": "esbuild src/lambda/**/index.ts --bundle --platform=node --outdir=dist/lambda",
-    "seed:db": "tsx --env-file=.env ./src/scripts/dynamo-seed-dev.ts",
-    "dev": "sst dev",
+    "dev": "bun run --hot src/index.ts",
+    "seed": "bun run src/scripts/seed.ts",
     "test": "vitest run --exclude '**/*.integration.test.ts'",
     "test:watch": "vitest --exclude '**/*.integration.test.ts'",
-    "test:db": "sst shell -- vitest run integration"
+    "test:integration": "vitest run '**/*.integration.test.ts'"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.980.0",
-    "@aws-sdk/lib-dynamodb": "3.980.0",
     "@coffee-card/shared": "file:../shared",
+    "@libsql/client": "^0.17.3",
     "@types/node": "^22.19.7",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.12.25",
     "jose": "^6.2.3",
     "qrcode": "^1.5.4",
     "zod": "^3.24.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.24.0",
-    "@types/aws-lambda": "^8.10.160",
     "esbuild": "^0.25.2",
     "eslint": "^9.24.0",
     "eslint-config-prettier": "^10.1.2",

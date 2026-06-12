@@ -3,10 +3,18 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "workspaces": [
+    "backend",
+    "web-frontend",
+    "shared",
+    "integrations/*"
+  ],
   "scripts": {
-    "dev": "sst dev",
-    "down": "sst remove",
-    "deploy": "sst deploy",
+    "dev:api": "bun run --hot backend/src/index.ts",
+    "dev:frontend": "bun --filter web-frontend dev",
+    "dev": "bun run dev:api & bun run dev:frontend",
+    "db:push": "bunx drizzle-kit push",
+    "db:seed": "bun run backend/src/scripts/seed.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "mock:webhook:shopify": "tsx scripts/emit-webhook.ts",
     "mock:webhook:square": "tsx scripts/emit-square-webhook.ts"
@@ -14,13 +22,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.9.0",
   "dependencies": {
     "typescript": "^5.9.3"
   },
   "devDependencies": {
-    "prettier": "3.8.1",
-    "sst": "^3.17.38",
-    "tsx": "^4.19.3"
+    "drizzle-kit": "^0.31.10",
+    "prettier": "3.8.1"
   }
 }

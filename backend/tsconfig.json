@@ -7,6 +7,9 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@coffee-card/shared/types": ["../shared/src/index.ts"],
+      "@coffee-card/shared/validation": ["../shared/src/dto/index.ts"],
+      "@coffee-card/shared/db": ["../shared/src/db/schema.ts"],
       "@coffee-card/shared": ["../shared/src/index.ts"]
     },
     "moduleResolution": "node",

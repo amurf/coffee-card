@@ -1,7 +1,9 @@
 import { PendingRedemptionModel } from "@coffee-card/shared"
-import { GetCommand, PutCommand, TransactWriteCommand } from "@aws-sdk/lib-dynamodb"
-import { TABLE_NAME, docClient, getCardById, getStoreByName } from "."
+import { db } from "../db"
+import { pendingRedemptions, loyaltyCards } from "@coffee-card/shared/db"
+import { getCardById, getStoreByName } from "."
 import { randomUUID } from "node:crypto"
+import { eq } from "drizzle-orm"
 
 export const createPendingRedemption = async (
   cardId: string,
@@ -33,12 +35,12 @@ export const createPendingRedemption = async (
     expiresAt,
   }
 
-  await docClient.send(
-    new PutCommand({
-      TableName: TABLE_NAME,
-      Item: pending,
-    })
-  )
+  await db.insert(pendingRedemptions).values({
+    token,
+    cardId,
+    milestoneId,
+    expiresAt,
+  })
 
   return pending
 }
@@ -46,48 +48,27 @@ export const createPendingRedemption = async (
 export const commitRedemption = async (
   token: string
 ): Promise<boolean> => {
-  const res = await docClient.send(
-    new GetCommand({
-      TableName: TABLE_NAME,
-      Key: {
-        PK: `Redemption#${token}`,
-        SK: `Redemption#${token}`,
-      },
-    })
-  )
-  const pending = res.Item as PendingRedemptionModel | undefined
-  if (!pending) return false
+  const res = await db.select().from(pendingRedemptions).where(eq(pendingRedemptions.token, token)).limit(1)
+  
+  if (!res.length) return false
+  const pending = res[0]
 
   const card = await getCardById(pending.cardId)
   if (!card) return false
 
-  const updatedCard = {
-    ...card,
-    redeemedMilestones: [...(card.redeemedMilestones || []), pending.milestoneId],
-  }
+  const updatedMilestones = [...(card.redeemedMilestones || []), pending.milestoneId]
 
-  await docClient.send(
-    new TransactWriteCommand({
-      TransactItems: [
-        {
-          Delete: {
-            TableName: TABLE_NAME,
-            Key: {
-              PK: pending.PK,
-              SK: pending.SK,
-            },
-            ConditionExpression: "attribute_exists(PK)",
-          },
-        },
-        {
-          Put: {
-            TableName: TABLE_NAME,
-            Item: updatedCard,
-          },
-        },
-      ],
-    })
-  )
+  await db.transaction(async (tx) => {
+    // 1. Remove pending redemption
+    await tx.delete(pendingRedemptions).where(eq(pendingRedemptions.token, token))
+
+    // 2. Add redeemed milestone to card
+    await tx.update(loyaltyCards)
+      .set({
+        redeemedMilestones: updatedMilestones,
+      })
+      .where(eq(loyaltyCards.id, pending.cardId))
+  })
 
   return true
 }

@@ -1,28 +1,29 @@
 import { LoyaltyCardModel } from "@coffee-card/shared"
-import { QueryCommand, UpdateCommand, TransactWriteCommand } from "@aws-sdk/lib-dynamodb"
-import { TABLE_NAME, TABLE_INDEXES, docClient } from "."
-import { storeNameToPK } from "./helpers"
-
+import { db } from "../db"
+import { loyaltyCards, processedOrders } from "@coffee-card/shared/db"
+import { eq, sql } from "drizzle-orm"
 
 export const getCardById = async (
   cardId: LoyaltyCardModel["cardId"],
 ): Promise<LoyaltyCardModel | null> => {
-  const command = new QueryCommand({
-    TableName: TABLE_NAME,
-    IndexName: TABLE_INDEXES.GET_BY_CARD_ID,
-    KeyConditionExpression: "cardId = :cardId",
-    ExpressionAttributeValues: {
-      ":cardId": cardId,
-    },
-  })
+  const result = await db.select().from(loyaltyCards).where(eq(loyaltyCards.id, cardId)).limit(1)
 
-  const response = await docClient.send(command)
-
-  if (response.Items?.length) {
-    return response.Items[0] as LoyaltyCardModel
+  if (!result.length) {
+    return null
   }
 
-  return null
+  const card = result[0]
+  return {
+    PK: `STORE#${card.storeName.toLowerCase()}`,
+    SK: `CARD#${card.id}`,
+    EntityType: "Card",
+    cardId: card.id,
+    storeName: card.storeName,
+    issueDate: card.issueDate,
+    stampCount: card.stampCount,
+    totalStampsEarned: card.totalStampsEarned,
+    redeemedMilestones: card.redeemedMilestones,
+  }
 }
 
 export const redeem = async (
@@ -34,23 +35,14 @@ export const redeem = async (
     return null
   }
 
-  const command = new UpdateCommand({
-    TableName: TABLE_NAME,
-    Key: {
-      PK: card.PK,
-      SK: card.SK,
-    },
-    UpdateExpression:
-      "SET stampCount = stampCount + :val, totalStampsEarned = if_not_exists(totalStampsEarned, :zero) + :val",
-    ExpressionAttributeValues: {
-      ":val": stampCount,
-      ":zero": 0,
-    },
-    ReturnValues: "ALL_NEW",
-  })
+  await db.update(loyaltyCards)
+    .set({
+      stampCount: sql`${loyaltyCards.stampCount} + ${stampCount}`,
+      totalStampsEarned: sql`${loyaltyCards.totalStampsEarned} + ${stampCount}`,
+    })
+    .where(eq(loyaltyCards.id, cardId))
 
-  const response = await docClient.send(command)
-  return response.Attributes as LoyaltyCardModel
+  return await getCardById(cardId)
 }
 
 export const awardStampsForOrder = async (
@@ -63,68 +55,58 @@ export const awardStampsForOrder = async (
   alreadyProcessed?: boolean
   updatedCard?: LoyaltyCardModel
 }> => {
-  const card = await getCardById(cardId)
-  if (!card) {
-    return { success: false }
-  }
-
-  const storePK = storeNameToPK(storeName)
-  const orderSK = `PROCESSED_ORDER#${orderId}`
-
   try {
-    await docClient.send(
-      new TransactWriteCommand({
-        TransactItems: [
-          {
-            Put: {
-              TableName: TABLE_NAME,
-              Item: {
-                PK: storePK,
-                SK: orderSK,
-                EntityType: "ProcessedOrder",
-                cardId,
-                stampsAwarded: stampsToAward,
-                createdAt: new Date().toISOString(),
-              },
-              ConditionExpression: "attribute_not_exists(PK)",
-            },
-          },
-          {
-            Update: {
-              TableName: TABLE_NAME,
-              Key: {
-                PK: card.PK,
-                SK: card.SK,
-              },
-              UpdateExpression:
-                "SET stampCount = stampCount + :val, totalStampsEarned = if_not_exists(totalStampsEarned, :zero) + :val",
-              ExpressionAttributeValues: {
-                ":val": stampsToAward,
-                ":zero": 0,
-              },
-            },
-          },
-        ],
-      }),
-    )
+    const updatedCard = await db.transaction(async (tx) => {
+      // 1. Check/Insert processed order (idempotency key)
+      await tx.insert(processedOrders).values({
+        orderId,
+        storeName,
+        cardId,
+        stampsAwarded: stampsToAward,
+        createdAt: new Date().toISOString(),
+      })
 
-    const updatedCard = await getCardById(cardId)
+      // 2. Increment card stamp counts
+      await tx.update(loyaltyCards)
+        .set({
+          stampCount: sql`${loyaltyCards.stampCount} + ${stampsToAward}`,
+          totalStampsEarned: sql`${loyaltyCards.totalStampsEarned} + ${stampsToAward}`,
+        })
+        .where(eq(loyaltyCards.id, cardId))
+
+      const card = await tx.select().from(loyaltyCards).where(eq(loyaltyCards.id, cardId)).limit(1)
+      if (!card.length) {
+        throw new Error(`Card ${cardId} not found during transaction`)
+      }
+      return card[0]
+    })
+
     return {
       success: true,
-      updatedCard: updatedCard || undefined,
+      updatedCard: {
+        PK: `STORE#${storeName.toLowerCase()}`,
+        SK: `CARD#${updatedCard.id}`,
+        EntityType: "Card",
+        cardId: updatedCard.id,
+        storeName: updatedCard.storeName,
+        issueDate: updatedCard.issueDate,
+        stampCount: updatedCard.stampCount,
+        totalStampsEarned: updatedCard.totalStampsEarned,
+        redeemedMilestones: updatedCard.redeemedMilestones,
+      },
     }
   } catch (err: any) {
-    if (err.name === "TransactionCanceledException") {
-      const reasons = err.CancellationReasons
-      if (reasons && reasons[0]?.Code === "ConditionalCheckFailed") {
-        console.warn(
-          `Order ${orderId} was already processed for store ${storeName}. Skipping.`,
-        )
-        return { success: false, alreadyProcessed: true }
-      }
+    const errorMsg = (err.message || "") + (err.cause?.message || "")
+    if (
+      errorMsg.includes("UNIQUE constraint failed") ||
+      errorMsg.includes("constraint failed") ||
+      errorMsg.includes("SQLITE_CONSTRAINT")
+    ) {
+      console.warn(
+        `Order ${orderId} was already processed for store ${storeName}. Skipping.`,
+      )
+      return { success: false, alreadyProcessed: true }
     }
     throw err
   }
 }
-
-

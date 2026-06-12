@@ -25,6 +25,7 @@
   "dependencies": {
     "@coffee-card/backend": "file:../../backend",
     "@coffee-card/shared": "file:../../shared",
+    "jose": "^6.2.3",
     "@prisma/client": "^6.19.2",
     "@remix-run/dev": "^2.16.1",
     "@remix-run/fs-routes": "^2.16.1",

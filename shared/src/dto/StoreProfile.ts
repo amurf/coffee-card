@@ -12,7 +12,7 @@ export const StoreProfileDtoSchema = z.object({
     logoUrl: z.string().optional(),
   }).optional(),
   rewardRules: RewardRulesSchema.optional(),
-  posType: z.enum(["SHOPIFY", "SQUARE", "NONE"]).optional(),
+  posType: z.enum(["SHOPIFY", "SQUARE", "LIGHTSPEED", "NONE"]).optional(),
   posConfig: z
     .object({
       shopifyShop: z.string().optional(),

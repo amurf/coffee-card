@@ -65,36 +65,11 @@ export const getStoreById = async (
   return await getApiClient().get(`stores/${storeId}`).json()
 }
 
-export const verifyQrToken = async (
-  token: string,
-): Promise<{ card: LoyaltyCardDto; store: StoreProfileDto }> => {
-  return await getApiClient()
-    .post(`merchant/cards/verify-token`, { json: { token } })
-    .json()
+export const getAllStores = async (): Promise<StoreProfileDto[]> => {
+  return await getApiClient().get(`stores`).json()
 }
 
-export const addStamps = async (
-  cardId: string,
-  stamps: number,
-  passcode: string,
-): Promise<LoyaltyCardDto> => {
-  return await getApiClient()
-    .post(`merchant/cards/${cardId}/stamps`, {
-      json: { stamps },
-      headers: { Authorization: `Bearer ${passcode}` },
-    })
-    .json()
+export const getStoreCards = async (storeId: string): Promise<LoyaltyCardDto[]> => {
+  return await getApiClient().get(`stores/${storeId}/cards`).json()
 }
 
-export const claimReward = async (
-  cardId: string,
-  milestoneId: string,
-  passcode: string,
-): Promise<LoyaltyCardDto> => {
-  return await getApiClient()
-    .post(`merchant/cards/${cardId}/claim`, {
-      json: { milestoneId },
-      headers: { Authorization: `Bearer ${passcode}` },
-    })
-    .json()
-}

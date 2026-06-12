@@ -6,3 +6,8 @@ dist
 .env.local
 *.zip
 sst-env.d.ts
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+

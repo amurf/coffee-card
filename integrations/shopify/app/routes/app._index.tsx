@@ -215,11 +215,7 @@ export default function Index() {
 
   return (
     <Page>
-      <TitleBar title="Dashboard">
-        <button variant="primary" onClick={() => navigate("/app/scan")}>
-          Scan Card
-        </button>
-      </TitleBar>
+      <TitleBar title="Dashboard" />
       <BlockStack gap="500">
         <Layout>
           {isUnconfigured && (
