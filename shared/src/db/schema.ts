@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core"
+import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core"
 import type { StoreProfileModel, LoyaltyCardModel, PendingRedemptionModel } from "../model"
 
 // Helper types from Zod definitions in StoreProfile
@@ -10,6 +10,8 @@ export const stores = sqliteTable("stores", {
   id: text("id").primaryKey(), // UUID
   name: text("name").unique().notNull(), // storeName (acts as PK in DynamoDB)
   location: text("location").notNull(),
+  latitude: real("latitude"),
+  longitude: real("longitude"),
   themeOptions: text("theme_options", { mode: "json" }).$type<ThemeOptions>(),
   rewardRules: text("reward_rules", { mode: "json" }).$type<RewardRules>(),
   posType: text("pos_type").$type<"SHOPIFY" | "SQUARE" | "LIGHTSPEED" | "NONE">().default("NONE").notNull(),

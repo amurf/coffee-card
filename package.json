@@ -6,13 +6,15 @@
   "workspaces": [
     "backend",
     "web-frontend",
+    "admin-frontend",
     "shared",
     "integrations/*"
   ],
   "scripts": {
     "dev:api": "bun run --hot backend/src/index.ts",
     "dev:frontend": "bun --filter web-frontend dev",
-    "dev": "bun run dev:api & bun run dev:frontend",
+    "dev:admin": "bun --filter admin-frontend dev",
+    "dev": "bun run dev:api & bun run dev:frontend & bun run dev:admin",
     "db:push": "bunx drizzle-kit push",
     "db:seed": "bun run backend/src/scripts/seed.ts",
     "test": "echo \"Error: no test specified\" && exit 1",

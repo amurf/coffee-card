@@ -14,6 +14,18 @@ const { mutate, error } = useMutation({
   onSuccess: (newData) => {
     creating.value = false
     localStorage.setItem("last-viewed-card-id", newData.cardId)
+    
+    try {
+      const existing = localStorage.getItem("my-coffee-cards")
+      const list: string[] = existing ? JSON.parse(existing) : []
+      if (!list.includes(newData.cardId)) {
+        list.push(newData.cardId)
+        localStorage.setItem("my-coffee-cards", JSON.stringify(list))
+      }
+    } catch (err) {
+      console.error("Failed to save card to wallet", err)
+    }
+
     setTimeout(() => {
       router.push(`/card/${newData.cardId}`)
     }, 1000)

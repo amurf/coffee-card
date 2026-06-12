@@ -39,6 +39,8 @@ export const StoreProfileSchema = z.object({
   storeId: z.string(),
   storeName: z.string(),
   location: z.string(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
   themeOptions: z
     .object({
       primaryColor: z.string(),

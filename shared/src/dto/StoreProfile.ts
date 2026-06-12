@@ -6,6 +6,8 @@ export const StoreProfileDtoSchema = z.object({
   storeId: z.string(),
   storeName: z.string(),
   location: z.string(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
   themeOptions: z.object({
     primaryColor: z.string(),
     secondaryColor: z.string(),
@@ -35,6 +37,8 @@ export const toStoreProfileDto = (
     storeId: model.storeId,
     storeName: model.storeName,
     location: model.location,
+    latitude: model.latitude,
+    longitude: model.longitude,
     themeOptions: model.themeOptions,
     rewardRules: model.rewardRules,
     posType: model.posType,
