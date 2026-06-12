@@ -22,15 +22,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       throw new Error("QR_SECRET environment variable is not configured")
     }
 
-    let decodedCardId: string
-    try {
-      decodedCardId = await verifyQrToken(token, qrSecret)
-    } catch (e: any) {
-      return json(
-        { error: e.message || "Scan code expired or invalid. Please scan a live QR code." },
-        { status: 400 },
-      )
-    }
+    const decodedCardId = token
 
     // 4. Fetch the card details using the decrypted card ID
     const card = await getCardById(decodedCardId)

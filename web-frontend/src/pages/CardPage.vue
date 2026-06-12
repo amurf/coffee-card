@@ -3,60 +3,54 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { useQuery } from "@tanstack/vue-query"
-import { getCardById, getStoreById, getCardQrToken } from "@coffee-card/shared"
+import { getCardById, getStoreById } from "@coffee-card/shared"
 import { useRoute } from "vue-router"
 import CardDescription from "@/components/ui/card/CardDescription.vue"
 
 import QRCode from "qrcode"
-import { onMounted, onUnmounted, useTemplateRef, computed, watch, ref } from "vue"
+import { onMounted, useTemplateRef, computed, watch } from "vue"
 
 const route = useRoute()
 const cardId = route.params.cardId
 
 const canvasRef = useTemplateRef("canvas")
-const qrToken = ref<string>("")
-let tokenInterval: number | undefined
-
-async function refreshQrToken() {
-  try {
-    const res = await getCardQrToken(cardId as string)
-    qrToken.value = res.qrToken
-  } catch (error) {
-    console.error("Failed to fetch QR token:", error)
-  }
-}
 
 async function generateQRCode() {
   try {
     const canvas = canvasRef.value
-    if (!canvas || !qrToken.value) {
+    if (!canvas || !cardId) {
       return
     }
 
     canvas.width = 200 // Set canvas width
     canvas.height = 200 // Set canvas height
-    await QRCode.toCanvas(canvas, qrToken.value, { errorCorrectionLevel: "H" })
+    await QRCode.toCanvas(canvas, cardId as string, { errorCorrectionLevel: "H" })
   } catch (error) {
     console.error(error)
   }
 }
 
-watch([canvasRef, qrToken], () => {
+watch(canvasRef, () => {
   generateQRCode()
 })
 
 onMounted(() => {
   if (cardId) {
     localStorage.setItem("last-viewed-card-id", cardId as string)
-    refreshQrToken()
-    // Refresh token every 45 seconds to keep it valid
-    tokenInterval = window.setInterval(refreshQrToken, 45000)
-  }
-})
+    
+    // Add to local wallet if not already present
+    try {
+      const existing = localStorage.getItem("my-coffee-cards")
+      const list: string[] = existing ? JSON.parse(existing) : []
+      if (!list.includes(cardId as string)) {
+        list.push(cardId as string)
+        localStorage.setItem("my-coffee-cards", JSON.stringify(list))
+      }
+    } catch (err) {
+      console.error("Failed to save card to wallet", err)
+    }
 
-onUnmounted(() => {
-  if (tokenInterval) {
-    clearInterval(tokenInterval)
+    generateQRCode()
   }
 })
 
