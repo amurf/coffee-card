@@ -18,6 +18,7 @@ export const StoreProfileDtoSchema = z.object({
   posConfig: z
     .object({
       shopifyShop: z.string().optional(),
+      shopifyAccessToken: z.string().optional(),
       squareLocationId: z.string().optional(),
       squareAccessToken: z.string().optional(),
       squareRefreshToken: z.string().optional(),

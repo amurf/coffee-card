@@ -19,7 +19,10 @@
     "db:seed": "bun run backend/src/scripts/seed.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "mock:webhook:shopify": "tsx scripts/emit-webhook.ts",
-    "mock:webhook:square": "tsx scripts/emit-square-webhook.ts"
+    "mock:webhook:square": "tsx scripts/emit-square-webhook.ts",
+    "shopify:link": "bun run --cwd integrations/shopify config:link",
+    "shopify:deploy": "bun run --cwd integrations/shopify deploy",
+    "shopify:build": "bun run --cwd integrations/shopify build"
   },
   "keywords": [],
   "author": "",

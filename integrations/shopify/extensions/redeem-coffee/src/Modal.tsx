@@ -19,10 +19,10 @@ import {
   reserveRedemption,
   configureApi,
 } from "@coffee-card/shared"
-import { Card } from "@shopify/polaris"
 
-if (import.meta.env.VITE_API_URL) {
-  configureApi(import.meta.env.VITE_API_URL)
+const apiUrl = process.env.VITE_API_URL
+if (apiUrl) {
+  configureApi(apiUrl)
 } else {
   console.error("VITE_API_URL is not defined")
 }

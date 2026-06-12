@@ -17,6 +17,9 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    exclude: ["@coffee-card/shared"],
+  },
   plugins: [vue(), vueDevTools(), tailwindcss()],
   resolve: {
     alias: {

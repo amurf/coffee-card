@@ -20,6 +20,11 @@ const router = createRouter({
       name: "card",
       component: CardPage,
     },
+    {
+      path: "/merchant/signup",
+      name: "merchant-signup",
+      component: () => import("../pages/MerchantSignupPage.vue"),
+    },
   ],
 })
 

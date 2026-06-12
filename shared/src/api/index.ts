@@ -73,3 +73,29 @@ export const getStoreCards = async (storeId: string): Promise<LoyaltyCardDto[]> 
   return await getApiClient().get(`stores/${storeId}/cards`).json()
 }
 
+export const createStore = async (storeName: string): Promise<StoreProfileDto> => {
+  return await getApiClient().post("stores", { json: { storeName } }).json()
+}
+
+export const updateStore = async (
+  storeId: string,
+  store: Partial<StoreProfileDto>,
+): Promise<StoreProfileDto> => {
+  return await getApiClient().put(`stores/${storeId}`, { json: store }).json()
+}
+
+export const getSquareConfig = async (): Promise<{
+  clientId: string
+  redirectUri: string
+  oauthBase: string
+}> => {
+  return await getApiClient().get(`integrations/square/config`).json()
+}
+
+export const getShopifyConfig = async (): Promise<{
+  clientId: string
+  redirectUri: string
+}> => {
+  return await getApiClient().get(`integrations/shopify/config`).json()
+}
+

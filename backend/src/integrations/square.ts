@@ -125,7 +125,10 @@ export async function getSquareCustomerReferenceId(
   customerId: string,
   token: string,
 ): Promise<string | null> {
-  const isSandbox = token.startsWith("EAAAEP") || token.startsWith("sandbox-")
+  const isSandbox =
+    (process.env.SQUARE_CLIENT_ID || "").startsWith("sandbox-") ||
+    token.startsWith("EAAAEP") ||
+    token.startsWith("sandbox-")
   const baseUrl = isSandbox
     ? "https://connect.squareupsandbox.com"
     : "https://connect.squareup.com"
@@ -161,7 +164,10 @@ export async function getSquareOrder(
   orderId: string,
   token: string,
 ): Promise<any | null> {
-  const isSandbox = token.startsWith("EAAAEP") || token.startsWith("sandbox-")
+  const isSandbox =
+    (process.env.SQUARE_CLIENT_ID || "").startsWith("sandbox-") ||
+    token.startsWith("EAAAEP") ||
+    token.startsWith("sandbox-")
   const baseUrl = isSandbox
     ? "https://connect.squareupsandbox.com"
     : "https://connect.squareup.com"
@@ -207,7 +213,10 @@ export async function syncCardToSquare(
   }
 
   // Square sandbox tokens start with EAAAEP or sandbox-
-  const isSandbox = token.startsWith("EAAAEP") || token.startsWith("sandbox-")
+  const isSandbox =
+    (process.env.SQUARE_CLIENT_ID || "").startsWith("sandbox-") ||
+    token.startsWith("EAAAEP") ||
+    token.startsWith("sandbox-")
   const baseUrl = isSandbox
     ? "https://connect.squareupsandbox.com"
     : "https://connect.squareup.com"

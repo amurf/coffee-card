@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { ref, watch } from "vue"
+import { ref, watch, onMounted } from "vue"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query"
-import { getAllStores, getStoreCards, createCard } from "@coffee-card/shared"
-import { Sparkles, Store, ShieldAlert, Cpu, QrCode, PlusCircle, Loader2, X, ExternalLink, ChevronRight, Calendar } from "lucide-vue-next"
+import { getAllStores, getStoreCards, createCard, updateStore, getSquareConfig, getShopifyConfig } from "@coffee-card/shared"
+import { Sparkles, Store, ShieldAlert, Cpu, QrCode, PlusCircle, Loader2, X, ExternalLink, ChevronRight, Calendar, CheckCircle2 } from "lucide-vue-next"
+import { useRoute, useRouter } from "vue-router"
 import QRCode from "qrcode"
 
 const queryClient = useQueryClient()
+const route = useRoute()
+const router = useRouter()
 const selectedStoreName = ref<string | null>(null)
 
 // 1. Fetch all stores
@@ -74,6 +77,110 @@ const closeModal = () => {
   isModalOpen.value = false
   createdCardData.value = null
 }
+
+// POS Integration settings state
+const squareConfig = ref<{ clientId: string; redirectUri: string; oauthBase: string } | null>(null)
+const shopifyConfig = ref<{ clientId: string; redirectUri: string } | null>(null)
+const isSuccessBannerOpen = ref(false)
+
+const posTypeInput = ref<string>("NONE")
+const squareLocationIdInput = ref<string>("")
+const shopifyShopInput = ref<string>("")
+
+onMounted(async () => {
+  if (route.query.success === "true") {
+    isSuccessBannerOpen.value = true
+    if (route.query.store) {
+      selectedStoreName.value = route.query.store as string
+    }
+    router.replace({ path: route.path })
+  }
+
+  try {
+    squareConfig.value = await getSquareConfig()
+  } catch (err) {
+    console.error("Failed to load Square config", err)
+  }
+
+  try {
+    shopifyConfig.value = await getShopifyConfig()
+  } catch (err) {
+    console.error("Failed to load Shopify config", err)
+  }
+})
+
+// Sync form values when the selected store profile changes
+watch(
+  [stores, selectedStoreName],
+  () => {
+    const store = stores.value?.find(s => s.storeName === selectedStoreName.value)
+    if (store) {
+      posTypeInput.value = store.posType || "NONE"
+      squareLocationIdInput.value = store.posConfig?.squareLocationId || ""
+      shopifyShopInput.value = store.posConfig?.shopifyShop || ""
+    }
+  },
+  { immediate: true }
+)
+
+const updateStoreMutation = useMutation({
+  mutationFn: ({ storeName, updates }: { storeName: string; updates: any }) => updateStore(storeName, updates),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["stores"] })
+  }
+})
+
+const handleSavePOS = () => {
+  if (!selectedStoreName.value) return
+  const currentStore = stores.value?.find(s => s.storeName === selectedStoreName.value)
+  if (!currentStore) return
+
+  const updates: any = {
+    posType: posTypeInput.value,
+    posConfig: {
+      ...currentStore.posConfig,
+      squareLocationId: posTypeInput.value === "SQUARE" ? squareLocationIdInput.value : currentStore.posConfig?.squareLocationId,
+      shopifyShop: posTypeInput.value === "SHOPIFY" ? shopifyShopInput.value : currentStore.posConfig?.shopifyShop,
+    }
+  }
+
+  updateStoreMutation.mutate({ storeName: selectedStoreName.value, updates })
+}
+
+const handleDisconnectSquare = () => {
+  if (!selectedStoreName.value) return
+  const currentStore = stores.value?.find(s => s.storeName === selectedStoreName.value)
+  if (!currentStore) return
+
+  const updates: any = {
+    posType: "NONE",
+    posConfig: {
+      ...currentStore.posConfig,
+      squareAccessToken: "",
+      squareRefreshToken: "",
+      squareTokenExpiresAt: "",
+      squareMerchantId: "",
+    }
+  }
+
+  updateStoreMutation.mutate({ storeName: selectedStoreName.value, updates })
+}
+
+const handleDisconnectShopify = () => {
+  if (!selectedStoreName.value) return
+  const currentStore = stores.value?.find(s => s.storeName === selectedStoreName.value)
+  if (!currentStore) return
+
+  const updates: any = {
+    posType: "NONE",
+    posConfig: {
+      ...currentStore.posConfig,
+      shopifyAccessToken: "",
+    }
+  }
+
+  updateStoreMutation.mutate({ storeName: selectedStoreName.value, updates })
+}
 </script>
 
 <template>
@@ -96,6 +203,20 @@ const closeModal = () => {
     </header>
 
     <div class="max-w-7xl mx-auto px-6 pt-8">
+      <!-- Success Banner -->
+      <div v-if="isSuccessBannerOpen" class="mb-8 bg-emerald-500/10 border border-emerald-500/20 p-5 rounded-xl flex justify-between items-start text-emerald-600 dark:text-emerald-400">
+        <div class="flex gap-3 items-start">
+          <CheckCircle2 class="w-5 h-5 shrink-0 mt-0.5" />
+          <div>
+            <h3 class="font-bold">Square Connected Successfully</h3>
+            <p class="text-xs mt-1">Your Square store has been linked to Coffee Card.</p>
+          </div>
+        </div>
+        <button @click="isSuccessBannerOpen = false" class="text-muted-foreground hover:text-foreground">
+          <X class="w-4 h-4" />
+        </button>
+      </div>
+
       <!-- Error Banner -->
       <div v-if="storesError" class="mb-8 bg-destructive/10 border border-destructive/20 p-5 rounded-xl flex gap-3 items-start text-destructive">
         <ShieldAlert class="w-5 h-5 shrink-0 mt-0.5" />
@@ -178,6 +299,163 @@ const closeModal = () => {
                   <PlusCircle v-else class="w-3.5 h-3.5" />
                   <span>Issue Card</span>
                 </button>
+              </div>
+
+              <!-- POS Integration Section -->
+              <div class="mt-6 pt-6 border-t border-border space-y-4">
+                <h3 class="text-sm font-semibold flex items-center gap-1.5">
+                  <Cpu class="w-4 h-4 text-primary" />
+                  <span>POS Integration Settings</span>
+                </h3>
+                
+                <div class="space-y-3">
+                  <div>
+                    <label class="block text-xs text-muted-foreground mb-1">Select POS Platform</label>
+                    <select 
+                      v-model="posTypeInput" 
+                      class="bg-secondary text-foreground border border-border text-sm rounded-lg block w-full p-2.5 outline-none"
+                    >
+                      <option value="NONE">None (Standalone)</option>
+                      <option value="SHOPIFY">Shopify POS</option>
+                      <option value="SQUARE">Square POS</option>
+                    </select>
+                  </div>
+
+                  <!-- Shopify Configuration -->
+                  <div v-if="posTypeInput === 'SHOPIFY'" class="space-y-4 pt-2">
+                    <div v-if="store.posConfig?.shopifyAccessToken" class="bg-emerald-500/10 border border-emerald-500/20 p-3.5 rounded-lg text-xs text-emerald-600 dark:text-emerald-400 flex flex-col gap-2">
+                      <div class="flex items-center gap-1.5 font-semibold">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>Shopify POS Connected</span>
+                      </div>
+                      <p class="text-muted-foreground">
+                        Connected Store: <code class="font-mono bg-secondary/80 px-1 py-0.5 rounded">{{ store.posConfig.shopifyShop }}</code>
+                      </p>
+                      <button 
+                        @click="handleDisconnectShopify" 
+                        class="w-fit border border-emerald-500/20 hover:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs px-2.5 py-1.5 rounded-md mt-1 transition-all"
+                      >
+                        Disconnect Shopify
+                      </button>
+                    </div>
+
+                    <div v-else class="space-y-3">
+                      <!-- Domain Input -->
+                      <div>
+                        <label class="block text-xs text-muted-foreground mb-1">Shopify Store Domain</label>
+                        <input 
+                          v-model="shopifyShopInput" 
+                          type="text" 
+                          placeholder="your-shop.myshopify.com" 
+                          class="bg-secondary text-foreground border border-border text-xs rounded-lg block w-full p-2 outline-none font-mono"
+                        />
+                        <p class="text-[10px] text-muted-foreground mt-1">E.g., storename.myshopify.com (do not include https://).</p>
+                      </div>
+
+                      <!-- OAuth Connect Button -->
+                      <div v-if="shopifyConfig?.clientId" class="bg-blue-500/10 border border-blue-500/20 p-3.5 rounded-lg text-xs text-blue-600 dark:text-blue-400 space-y-3">
+                        <p class="text-muted-foreground">
+                          Connect your Shopify store to authorize Coffee Card to listen for paid order webhooks.
+                        </p>
+                        <div class="flex items-center gap-2">
+                          <a 
+                            :href="shopifyShopInput.trim() ? `https://${shopifyShopInput.trim()}/admin/oauth/authorize?client_id=${shopifyConfig.clientId}&scope=read_orders,read_customers&redirect_uri=${encodeURIComponent(shopifyConfig.redirectUri)}&state=admin:${store.storeName}` : '#'"
+                            :class="[
+                              'font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-xs',
+                              shopifyShopInput.trim() ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-gray-300 text-gray-500 pointer-events-none cursor-not-allowed'
+                            ]"
+                          >
+                            <span>Connect with Shopify</span>
+                            <ExternalLink class="w-3.5 h-3.5" />
+                          </a>
+                        </div>
+                      </div>
+
+                      <!-- Configuration Warning -->
+                      <div v-else class="bg-amber-500/10 border border-amber-500/20 p-3.5 rounded-lg text-xs text-amber-600 dark:text-amber-400 flex gap-2 items-start">
+                        <ShieldAlert class="w-4 h-4 shrink-0 mt-0.5" />
+                        <div>
+                          <p class="font-semibold">Shopify Integration Unavailable</p>
+                          <p class="text-muted-foreground mt-0.5">
+                            Shopify App Client ID is not configured in the server environment. Please configure SHOPIFY_CLIENT_ID to connect your Shopify account.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Square Configuration -->
+                  <div v-if="posTypeInput === 'SQUARE'" class="space-y-4 pt-2">
+                    <div v-if="store.posConfig?.squareRefreshToken" class="bg-emerald-500/10 border border-emerald-500/20 p-3.5 rounded-lg text-xs text-emerald-600 dark:text-emerald-400 flex flex-col gap-2">
+                      <div class="flex items-center gap-1.5 font-semibold">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>Square OAuth Connected</span>
+                      </div>
+                      <p class="text-muted-foreground">
+                        Connected Merchant ID: <code class="font-mono bg-secondary/80 px-1 py-0.5 rounded">{{ store.posConfig.squareMerchantId }}</code>
+                      </p>
+                      <button 
+                        @click="handleDisconnectSquare" 
+                        class="w-fit border border-emerald-500/20 hover:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs px-2.5 py-1.5 rounded-md mt-1 transition-all"
+                      >
+                        Disconnect Square
+                      </button>
+                    </div>
+
+                    <div v-else class="space-y-3">
+                      <!-- OAuth Connect Button -->
+                      <div v-if="squareConfig?.clientId" class="bg-blue-500/10 border border-blue-500/20 p-3.5 rounded-lg text-xs text-blue-600 dark:text-blue-400 space-y-3">
+                        <p class="text-muted-foreground">
+                          Connect your Square account to authorize Coffee Card to sync customer profiles and receive webhook transaction events.
+                        </p>
+                        <div class="flex items-center gap-2">
+                          <a 
+                            :href="`${squareConfig.oauthBase}/oauth2/authorize?client_id=${squareConfig.clientId}&scope=CUSTOMERS_WRITE+CUSTOMERS_READ+ORDERS_READ&state=admin:${store.storeName}&redirect_uri=${encodeURIComponent(squareConfig.redirectUri)}`"
+                            class="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-xs"
+                          >
+                            <span>Connect with Square</span>
+                            <ExternalLink class="w-3.5 h-3.5" />
+                          </a>
+                        </div>
+                      </div>
+
+                      <!-- Configuration Warning -->
+                      <div v-else class="bg-amber-500/10 border border-amber-500/20 p-3.5 rounded-lg text-xs text-amber-600 dark:text-amber-400 flex gap-2 items-start">
+                        <ShieldAlert class="w-4 h-4 shrink-0 mt-0.5" />
+                        <div>
+                          <p class="font-semibold">Square Integration Unavailable</p>
+                          <p class="text-muted-foreground mt-0.5">
+                            Square App Client ID is not configured in the server environment. Please configure SQUARE_CLIENT_ID to connect your Square account.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Location ID field, needed for both OAuth and manual -->
+                    <div>
+                      <label class="block text-xs text-muted-foreground mb-1">Square Location ID</label>
+                      <input 
+                        v-model="squareLocationIdInput" 
+                        type="text" 
+                        placeholder="L-..." 
+                        class="bg-secondary text-foreground border border-border text-xs rounded-lg block w-full p-2 outline-none font-mono"
+                      />
+                      <p class="text-[10px] text-muted-foreground mt-1">Retrieve this from your Square Developer Console under Locations.</p>
+                    </div>
+                  </div>
+
+                  <!-- Save Button -->
+                  <div class="pt-2 flex justify-end">
+                    <button 
+                      @click="handleSavePOS" 
+                      :disabled="updateStoreMutation.isPending.value"
+                      class="bg-primary hover:bg-primary/95 text-primary-foreground disabled:opacity-50 text-xs font-semibold py-2 px-4 rounded-lg flex items-center gap-2 transition-all cursor-pointer"
+                    >
+                      <Loader2 v-if="updateStoreMutation.isPending.value" class="w-3.5 h-3.5 animate-spin" />
+                      <span>Save POS Settings</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
